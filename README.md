@@ -9,6 +9,7 @@ Gedeelde stijl, ontwerpfilosofie en onderdelen voor alle Finsera-dashboards. Gew
 | `charts.js` | Koppeling tokens ↔ Apache ECharts (thema, licht/donker, resize, `euro()`) |
 | `tabel.js` | Sorteerbare en filterbare tabel: TanStack Table (8.21.3) met `.fs-tabel`-opmaak |
 | `tailwind-theme.css` | Tailwind v4-brug: `bg-vlak`, `text-tekst-zacht` enzovoort wijzen naar de tokens |
+| `AGENTS.md` | Instructies voor LLM's die een dashboard bouwen: regels, onderdelenlijst, controlelijst |
 | `DESIGN.md` | Principes en regels: lees dit eerst |
 | `LIBRARIES.md` | Welke externe libraries we adopteren, overwegen of afraden, en waarom |
 | `index.html` | Levende documentatie en een compleet voorbeelddashboard (open in de browser) |
@@ -52,3 +53,15 @@ Eerst in `components.css` en `index.html` (zodat het zichtbaar en in beide thema
 
 - Alleen verzonnen data in voorbeelden en tests.
 - Tekstcontrast ≥ 4,5:1; controleer elke nieuwe kleur in licht en donker.
+
+## LLM-instructies in een project
+
+Elk project dat met een LLM wordt gebouwd, zegt dat in zijn eigen `CLAUDE.md` (of `AGENTS.md`):
+
+```md
+## UI
+Gebruik voor alle UI de bibliotheek finsera-ui en volg de regels in `AGENTS.md` daarvan.
+Lees die bestanden uit de dependency (`node_modules/finsera-ui/`) of de map ernaast, niet uit je geheugen.
+```
+
+Zorg dat `AGENTS.md` meekomt in de dependency door het in `files` van `package.json` op te nemen.
