@@ -24,6 +24,8 @@ const SORTEER = { asc: 'ascending', desc: 'descending' };
 
 /**
  * `cel(rij, waarde)` geeft HTML terug en moet zelf escapen (badge, meter, …); zonder `cel` wordt de waarde veilig getoond.
+ * Bevat een cel een knop of link, geef die dan een `data-sleutel` (uniek per rij): na opnieuw tekenen krijgt het element met
+ * dezelfde sleutel de focus terug. Sorteerknoppen doen dit vanzelf.
  * Kolomopties: `getal` (rechts, tabulair), `rijkop` (th scope=row), `sorteerbaar` (standaard true), `breedte`.
  */
 export function maakTabel(element, { data, kolommen, voet, leeg, onWijziging, bijschrift }) {
@@ -80,7 +82,12 @@ export function maakTabel(element, { data, kolommen, voet, leeg, onWijziging, bi
         }).join('')}</tr>`).join('')
       : `<tr><td colspan="${kolommen.length}"><div class="fs-leeg"><h3>${esc(leeg?.titel ?? 'Geen resultaten')}</h3><p>${esc(leeg?.tekst ?? '')}</p></div></td></tr>`;
 
+    // Opnieuw tekenen vervangt de elementen; zonder dit raakt een toetsenbordgebruiker de focus kwijt (bijvoorbeeld op een sorteerknop).
+    const actief = document.activeElement;
+    const sleutel = element.contains(actief) ? actief.closest('[data-sleutel], .fs-sorteer') : null;
+    const sel = sleutel ? (sleutel.hasAttribute('data-sleutel') ? `[data-sleutel="${CSS.escape(sleutel.dataset.sleutel)}"]` : `.fs-sorteer[data-kolom="${CSS.escape(sleutel.dataset.kolom)}"]`) : null;
     element.innerHTML = `<div class="fs-tabelrand" tabindex="0"><table class="fs-tabel">${bijschrift ? `<caption class="fs-verborgen">${esc(bijschrift)}</caption>` : ''}<thead><tr>${kop}</tr></thead><tbody>${body}</tbody>${voet && rijen.length ? `<tfoot>${voet(rijen.map((r) => r.original))}</tfoot>` : ''}</table></div>`;
+    if (sel) element.querySelector(sel)?.focus({ preventScroll: true });
     onWijziging?.({ aantal: rijen.length, totaal: data.length });
   }
 

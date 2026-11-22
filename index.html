@@ -118,7 +118,7 @@
           <div class="fs-rij"><input id="zoek" class="fs-invoer" style="width:220px" type="search" placeholder="Zoek op klant of status" aria-label="Zoeken"><button class="fs-knop fs-knop--klein">Filter</button></div>
         </div>
         <div id="dossiers"></div>
-        <p class="fs-herkomst" id="dossiers-telling" aria-live="polite"><span>Klik op een klant om de instellingen te openen.</span></p>
+        <p class="fs-herkomst" id="dossiers-telling" aria-live="polite"><span>Klik op een klant voor het zijpaneel met snelle instellingen.</span></p>
       </section>
     </section>
 
@@ -222,6 +222,36 @@
 </div>
 
 
+<dialog class="fs-zijpaneel" id="paneel-dossier" aria-labelledby="paneel-titel">
+  <div class="fs-zijpaneel__kop">
+    <div><h2 class="fs-zijpaneel__titel" id="paneel-titel" tabindex="-1">Dossier</h2><p class="fs-zijpaneel__sub" id="paneel-sub"></p></div>
+    <button type="button" class="fs-knop fs-knop--tekst fs-knop--icoon" data-sluit aria-label="Paneel sluiten"><i data-lucide="x"></i></button>
+  </div>
+  <div class="fs-zijpaneel__inhoud">
+    <section class="fs-zijpaneel__sectie" aria-labelledby="paneel-overzicht">
+      <h3 class="fs-label" id="paneel-overzicht">Overzicht</h3>
+      <dl class="fs-kenmerken">
+        <dt>Status</dt><dd><span class="fs-badge" id="paneel-badge"></span></dd>
+        <dt>Openstaand</dt><dd id="paneel-bedrag"></dd>
+        <dt>Betaaltermijn</dt><dd id="paneel-termijn"></dd>
+        <dt>Voortgang</dt><dd><span class="fs-meter" id="paneel-meter" role="img"><span></span></span></dd>
+      </dl>
+    </section>
+    <section class="fs-zijpaneel__sectie" aria-labelledby="paneel-snel">
+      <h3 class="fs-label" id="paneel-snel">Snelle instellingen</h3>
+      <div class="fs-stapel">
+        <label class="fs-veld">Status<select class="fs-select" name="status"><option value="wacht">Wacht op klant</option><option value="controle">In controle</option><option value="achter">Achterstallig</option><option value="akkoord">Akkoord</option></select></label>
+        <label class="fs-schakelaar"><span>Herinnering sturen<small>Elke week tot de klant reageert.</small></span><input type="checkbox" role="switch" name="herinnering"></label>
+        <label class="fs-schakelaar"><span>Aandacht markeren<small>Zet het dossier bovenaan het overzicht van medewerkers.</small></span><input type="checkbox" role="switch" name="aandacht"></label>
+      </div>
+    </section>
+    <p class="fs-herkomst" style="margin:0"><span>Wijzigingen gelden direct.</span><span>Bron: Exact Online</span></p>
+  </div>
+  <div class="fs-zijpaneel__acties">
+    <button type="button" class="fs-knop" id="paneel-alle">Alle instellingen…</button>
+  </div>
+</dialog>
+
 <dialog class="fs-dialoog fs-dialoog--groot" id="dialoog-instellingen" aria-labelledby="instellingen-titel" data-bewaak-wijzigingen>
   <form method="dialog">
     <div class="fs-dialoog__kop">
@@ -315,11 +345,12 @@ import('./tabel.js').then(({ maakTabel }) => {
     { naam: 'Tuincentrum Het Groen', status: 'controle', voortgang: 90, bedrag: 940, dagen: 18 },
   ];
   const meter = (v, fout) => `<span class="fs-meter${fout ? ' fs-meter--fout' : ''}"><span style="--fs-waarde:${v}%"></span></span>`;
+  let gekozen = -1;
   const telling = document.getElementById('dossiers-telling');
   const t = maakTabel(document.getElementById('dossiers'), {
     data, bijschrift: 'Dossiers die aandacht vragen',
     kolommen: [
-      { id: 'klant', kop: 'Klant', waarde: (r) => r.naam, rijkop: true, cel: (r) => `<button type="button" class="fs-koppeling" data-dossier="${data.indexOf(r)}" aria-haspopup="dialog">${r.naam}</button>` },
+      { id: 'klant', kop: 'Klant', waarde: (r) => r.naam, rijkop: true, cel: (r) => { const i = data.indexOf(r); return `<button type="button" class="fs-koppeling" data-dossier="${i}" data-sleutel="dossier-${i}" aria-haspopup="dialog"${gekozen === i ? ' aria-current="true"' : ''}>${r.naam}</button>`; } },
       { id: 'status', kop: 'Status', waarde: (r) => STATUS[r.status][1], cel: (r) => `<span class="fs-badge fs-badge--${STATUS[r.status][0]}">${STATUS[r.status][1]}</span>` },
       { id: 'voortgang', kop: 'Voortgang', waarde: (r) => r.voortgang, breedte: '160px', cel: (r) => meter(r.voortgang, r.status === 'achter') },
       { id: 'bedrag', kop: 'Openstaand', waarde: (r) => r.bedrag, getal: true, cel: (r) => eur.format(r.bedrag) },
@@ -334,6 +365,11 @@ import('./tabel.js').then(({ maakTabel }) => {
     const knop = e.target.closest('[data-dossier]');
     if (knop) document.dispatchEvent(new CustomEvent('open-dossier', { detail: { ...data[knop.dataset.dossier], index: Number(knop.dataset.dossier) } }));
   });
+  // Het paneel meldt wat er gebeurt; de tabel tekent zich daarop opnieuw (zelfde objecten, nieuwe array).
+  const opnieuw = () => t.zetData([...data]);
+  document.addEventListener('open-dossier', (e) => { gekozen = e.detail.index; opnieuw(); });
+  document.addEventListener('paneel-gesloten', () => { gekozen = -1; opnieuw(); });
+  document.addEventListener('dossier-wijzig', (e) => { Object.assign(data[e.detail.index], { status: e.detail.status }); opnieuw(); });
 });
 
 /* Toasts: vanilla-sonner via toast.js */
@@ -377,7 +413,7 @@ Promise.all([import('./dialoog.js'), import('./toast.js')]).then(([{ open, koppe
     form.status.value = d.status;
     open(dlg);
   };
-  document.addEventListener('open-dossier', (e) => toon(e.detail));
+  document.addEventListener('open-dossier-instellingen', (e) => toon(e.detail));
   document.getElementById('dialoog-instellingen-open').addEventListener('click', () => toon({ naam: 'Bakkerij De Gouden Korst B.V.', status: 'wacht', bedrag: 12480, index: 0 }));
   dlg.addEventListener('close', () => { if (dlg.returnValue === 'opslaan') melding.succes('Instellingen opgeslagen', form.naam.value); });
   document.getElementById('instellingen-archiveer').addEventListener('click', async () => {
@@ -385,6 +421,64 @@ Promise.all([import('./dialoog.js'), import('./toast.js')]).then(([{ open, koppe
   });
   document.getElementById('instellingen-verwijder').addEventListener('click', async () => {
     if (await bevestig({ titel: 'Dossier verwijderen?', tekst: 'Alle documenten in dit dossier worden ook verwijderd. Dit kan niet ongedaan worden gemaakt.', bevestigtekst: 'Dossier verwijderen', gevaarlijk: true })) { dlg.close('verwijderd'); melding.succes('Dossier verwijderd'); }
+  });
+});
+
+/* Zijpaneel: klik op een dossier, kijk en pas snel aan (wijzigingen gelden direct) */
+Promise.all([import('./paneel.js'), import('./toast.js')]).then(([{ koppelPaneel, openPaneel, sluitPaneel }, { melding }]) => {
+  const p = document.getElementById('paneel-dossier');
+  koppelPaneel(p);
+  const euro = new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR' });
+  const STATUS = { wacht: 'Wacht op klant', achter: 'Achterstallig', controle: 'In controle', akkoord: 'Akkoord' };
+  const SOORT = { wacht: 'waarschuwing', achter: 'fout', controle: 'info', akkoord: 'succes' };
+  const instellingen = new Map();   // per dossier: { herinnering, aandacht }
+  let huidig = null;
+  const $ = (id) => document.getElementById(id);
+  const veld = (naam) => p.querySelector(`[name=${naam}]`);
+
+  const vul = () => {
+    const d = huidig;
+    $('paneel-titel').textContent = d.naam;
+    $('paneel-sub').textContent = `${STATUS[d.status]} · ${euro.format(d.bedrag)} openstaand`;
+    $('paneel-badge').className = `fs-badge fs-badge--${SOORT[d.status]}`;
+    $('paneel-badge').textContent = STATUS[d.status];
+    $('paneel-bedrag').textContent = euro.format(d.bedrag);
+    $('paneel-termijn').textContent = `${d.dagen} dagen`;
+    $('paneel-meter').style.setProperty('--fs-waarde', `${d.voortgang}%`);
+    $('paneel-meter').setAttribute('aria-label', `Voortgang ${d.voortgang} procent`);
+    veld('status').value = d.status;
+    const i = instellingen.get(d.index) ?? { herinnering: d.status === 'wacht', aandacht: d.status === 'achter' };
+    veld('herinnering').checked = i.herinnering;
+    veld('aandacht').checked = i.aandacht;
+  };
+
+  document.addEventListener('open-dossier', (e) => {
+    huidig = { ...e.detail };
+    vul();
+    openPaneel(p, { focusTerug: () => document.querySelector(`[data-dossier="${e.detail.index}"]`) });
+  });
+  p.addEventListener('close', () => { if (p.returnValue !== 'modus') { huidig = null; document.dispatchEvent(new CustomEvent('paneel-gesloten')); } });
+
+  // Status: geldt direct, met ongedaan maken.
+  const zetStatus = (index, status) => {
+    document.dispatchEvent(new CustomEvent('dossier-wijzig', { detail: { index, status } }));
+    if (huidig?.index === index) { huidig.status = status; vul(); }
+  };
+  veld('status').addEventListener('change', (e) => {
+    const index = huidig.index, oud = huidig.status, nieuw = e.target.value;
+    zetStatus(index, nieuw);
+    melding.ongedaan(`Status gewijzigd naar ${STATUS[nieuw]}`, () => zetStatus(index, oud));
+  });
+  // Schakelaars: ook direct.
+  for (const naam of ['herinnering', 'aandacht']) veld(naam).addEventListener('change', () => {
+    instellingen.set(huidig.index, { herinnering: veld('herinnering').checked, aandacht: veld('aandacht').checked });
+    melding.succes('Opgeslagen');
+  });
+  // Meer nodig? Dan naar de grote dialoog.
+  $('paneel-alle').addEventListener('click', () => {
+    const d = { ...huidig };
+    sluitPaneel(p);
+    document.dispatchEvent(new CustomEvent('open-dossier-instellingen', { detail: d }));
   });
 });
 lucide.createIcons();

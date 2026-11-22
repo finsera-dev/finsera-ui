@@ -11,6 +11,7 @@ Gedeelde stijl, ontwerpfilosofie en onderdelen voor alle Finsera-dashboards. Gew
 | `toast.js`, `toast.css` | Toasts: vanilla-sonner (0.7.0) met onze tokens en Nederlandse helpers (`melding.succes`, `melding.fout`, …) |
 | `stylelint-config.mjs` | Stylelint-regels die de tokens afdwingen (geen losse kleuren of lettertypes); deelbaar met andere projecten |
 | `dialoog.js` | Dialogen op de native `<dialog>`: `open`, `sluit`, `koppel`, `bevestig()` (belofte), tabs en bewaking van niet-opgeslagen wijzigingen, met `fs-dialoog`-opmaak |
+| `paneel.js` | Zijpaneel op de native `<dialog>`: niet-modaal op breed, modaal op smal scherm; `koppelPaneel`, `openPaneel`, `sluitPaneel` |
 | `tabs.js` | Toegankelijke tabs (ARIA, pijltjestoetsen, Home/End); werkt op de pagina, in een kaart en in een dialoog |
 | `tailwind-theme.css` | Tailwind v4-brug: `bg-vlak`, `text-tekst-zacht` enzovoort wijzen naar de tokens |
 | `AGENTS.md` | Instructies voor LLM's die een dashboard bouwen: regels, onderdelenlijst, controlelijst |

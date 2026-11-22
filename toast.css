@@ -53,3 +53,8 @@ html body [data-sonner-part='action-button'] {
   background: var(--fs-accent);
   color: var(--fs-accent-tekst);
 }
+
+/* Staat er een niet-modaal zijpaneel open, dan schuiven toasts ernaast in plaats van eroverheen. */
+@media (min-width: 900px) {
+  html:has(.fs-zijpaneel[open]:not(:modal)) body [data-sonner-toast][data-x-position='right'] { --x-offset: calc(min(420px, 100vw) + 16px); }
+}

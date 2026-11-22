@@ -122,10 +122,16 @@ test('bevestig: veilige keuze heeft de focus; annuleren geeft false, bevestigen 
 /* ---------- Grote dialoog met tabs ---------- */
 const TABS = ['Algemeen', 'Toegang', 'Meldingen', 'Geavanceerd'];
 
+// Een klik op een rij opent het zijpaneel; "Alle instellingen…" daarin opent de grote dialoog.
+async function openViaPaneel(page, rij) {
+  await page.click(`[data-dossier="${rij}"]`);
+  await page.getByRole('button', { name: 'Alle instellingen…' }).click();
+}
+
 async function openInstellingen(page, rij = 1) {
   await page.goto('/index.html');
   await page.waitForSelector('#dossiers table');
-  await page.click(`[data-dossier="${rij}"]`);
+  await openViaPaneel(page, rij);
   const dlg = page.locator('#dialoog-instellingen');
   await expect(dlg).toHaveJSProperty('open', true);
   return dlg;
@@ -176,7 +182,7 @@ test('instellingen: tabs met toetsenbord en juiste ARIA', async ({ page }) => {
   await tab('Meldingen').click();
   await page.keyboard.press('Escape');
   await expect(dlg).toHaveJSProperty('open', false);
-  await page.click('[data-dossier="2"]');
+  await openViaPaneel(page, 2);
   await expect(tab('Algemeen')).toHaveAttribute('aria-selected', 'true');
 });
 
@@ -196,7 +202,7 @@ test('instellingen: wijzigingen weggooien vraagt eerst bevestiging', async ({ pa
   await expect(page.getByRole('alertdialog')).toHaveCount(0);
 
   // Wel gewijzigd, in een andere tab dan de eerste: Esc vraagt eerst.
-  await page.click('[data-dossier="1"]');
+  await openViaPaneel(page, 1);
   await dlg.getByRole('tab', { name: 'Meldingen' }).click();
   await dlg.getByRole('switch', { name: /Wekelijks overzicht/ }).check();
   await page.keyboard.press('Escape');
@@ -219,7 +225,7 @@ test('instellingen: wijzigingen weggooien vraagt eerst bevestiging', async ({ pa
   await expect(dlg).toHaveJSProperty('open', false);
 
   // Na weggooien is de volgende keer weer schoon.
-  await page.click('[data-dossier="1"]');
+  await openViaPaneel(page, 1);
   await page.keyboard.press('Escape');
   await expect(dlg).toHaveJSProperty('open', false);
 });
@@ -267,4 +273,144 @@ test('instellingen: past op een smal scherm', async ({ browser }) => {
   expect(doos.y + doos.height).toBeLessThanOrEqual(schermen.mobiel.height);
   await expect(dlg.getByRole('button', { name: 'Instellingen opslaan' })).toBeInViewport(); // acties blijven bereikbaar
   await context.close();
+});
+
+/* ---------- Zijpaneel ---------- */
+const naamRij = (page, tekst) => page.locator('#dossiers tbody tr', { hasText: tekst });
+
+async function openPaneel(page, rij = 1, viewport = schermen.desktop) {
+  await page.setViewportSize(viewport);
+  await page.goto('/index.html');
+  await page.waitForSelector('#dossiers table');
+  await page.click(`[data-dossier="${rij}"]`);
+  const paneel = page.locator('#paneel-dossier');
+  await expect(paneel).toHaveJSProperty('open', true);
+  await page.waitForTimeout(300); // aanloopanimatie
+  return paneel;
+}
+
+for (const kleur of thema) {
+  test(`paneel: axe (niet-modaal, desktop), ${kleur}`, async ({ browser }) => {
+    const context = await browser.newContext({ viewport: schermen.desktop, colorScheme: kleur, reducedMotion: 'reduce' });
+    const page = await context.newPage();
+    await openPaneel(page);
+    const { violations } = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).analyze();
+    const samenvatting = violations.map((v) => `${v.id}: ${v.help}\n   ${v.nodes.slice(0, 3).map((n) => n.target.join(' ')).join('\n   ')}`).join('\n');
+    expect(violations, `Fouten met open paneel:\n${samenvatting}`).toEqual([]);
+    await context.close();
+  });
+}
+
+test('paneel: axe (modaal, tablet en mobiel), donker', async ({ browser }) => {
+  for (const viewport of [{ width: 800, height: 900 }, schermen.mobiel]) {
+    const context = await browser.newContext({ viewport, colorScheme: 'dark', reducedMotion: 'reduce' });
+    const page = await context.newPage();
+    await openPaneel(page, 1, viewport);
+    const { violations } = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).analyze();
+    const samenvatting = violations.map((v) => `${v.id}: ${v.help}\n   ${v.nodes.slice(0, 3).map((n) => n.target.join(' ')).join('\n   ')}`).join('\n');
+    expect(violations, `Fouten met open paneel op ${viewport.width}px:\n${samenvatting}`).toEqual([]);
+    await context.close();
+  }
+});
+
+test('paneel: niet-modaal op breed scherm, pagina blijft bruikbaar, wisselt van item', async ({ page }) => {
+  const paneel = await openPaneel(page, 1);
+  expect(await paneel.evaluate((el) => el.matches(':modal'))).toBe(false);
+  await expect(page.locator('#paneel-titel')).toBeFocused();
+  await expect(page.locator('#paneel-titel')).toHaveText('Studio Noord V.O.F.');
+  await expect(page.locator('[aria-current="true"]')).toHaveCount(1);
+
+  // De pagina erachter blijft bedienbaar en wordt niet vergrendeld.
+  await page.fill('#zoek', 'Bouw');
+  await expect(page.locator('#zoek')).toHaveValue('Bouw');
+  await page.fill('#zoek', '');
+  expect(await page.evaluate(() => getComputedStyle(document.documentElement).overflow)).not.toBe('hidden');
+
+  // Een ander item aanklikken wisselt de inhoud; het paneel blijft open.
+  await page.click('[data-dossier="0"]');
+  await expect(page.locator('#paneel-titel')).toHaveText('Bakkerij De Gouden Korst B.V.');
+  await expect(page.locator('#paneel-titel')).toBeFocused();
+  await expect(page.locator('[aria-current="true"]')).toHaveText('Bakkerij De Gouden Korst B.V.');
+  await expect(page.locator('[aria-current="true"]')).toHaveCount(1);
+  await expect(paneel).toHaveJSProperty('open', true);
+
+  // Esc sluit; de focus keert terug op het item dat het paneel opende.
+  await page.keyboard.press('Escape');
+  await expect(paneel).toHaveJSProperty('open', false);
+  await expect(page.locator('[data-dossier="0"]')).toBeFocused();
+  await expect(page.locator('[aria-current="true"]')).toHaveCount(0);
+
+  // Kruisje sluit ook.
+  await page.click('[data-dossier="3"]');
+  await paneel.getByRole('button', { name: 'Paneel sluiten' }).click();
+  await expect(paneel).toHaveJSProperty('open', false);
+  await expect(page.locator('[data-dossier="3"]')).toBeFocused();
+});
+
+test('paneel: snelle instelling geldt direct, werkt de tabel bij en kan ongedaan worden gemaakt', async ({ page }) => {
+  const paneel = await openPaneel(page, 1);
+  await expect(naamRij(page, 'Studio Noord').getByText('Achterstallig')).toBeVisible();
+
+  await paneel.getByLabel('Status').selectOption('akkoord');
+  await expect(naamRij(page, 'Studio Noord').getByText('Akkoord')).toBeVisible(); // tabel direct bijgewerkt
+  await expect(page.locator('#paneel-badge')).toHaveText('Akkoord');
+  const toast = page.locator('[data-sonner-toaster] li', { hasText: 'Status gewijzigd naar Akkoord' });
+  await expect(toast).toBeVisible();
+  // De toast staat naast het paneel en bedekt de knoppen eronder niet.
+  await page.waitForTimeout(400);
+  const doos = await toast.boundingBox();
+  const paneelDoos = await paneel.boundingBox();
+  expect(doos.x + doos.width, 'toast overlapt het paneel').toBeLessThanOrEqual(paneelDoos.x);
+
+  await toast.getByRole('button', { name: 'Ongedaan maken' }).click();
+  await expect(naamRij(page, 'Studio Noord').getByText('Achterstallig')).toBeVisible();
+  await expect(paneel.getByLabel('Status')).toHaveValue('achter');
+
+  // Een schakelaar geeft ook direct feedback.
+  await paneel.getByRole('switch', { name: /Herinnering sturen/ }).check();
+  await expect(page.locator('[data-sonner-toaster] li', { hasText: 'Opgeslagen' })).toBeVisible();
+  // Terug naar dit item toont de bewaarde keuze.
+  await page.click('[data-dossier="0"]');
+  await page.click('[data-dossier="1"]');
+  await expect(paneel.getByRole('switch', { name: /Herinnering sturen/ })).toBeChecked();
+});
+
+test('paneel: "Alle instellingen…" sluit het paneel en opent de grote dialoog voor hetzelfde dossier', async ({ page }) => {
+  const paneel = await openPaneel(page, 1);
+  await paneel.getByRole('button', { name: 'Alle instellingen…' }).click();
+  await expect(paneel).toHaveJSProperty('open', false);
+  const dlg = page.locator('#dialoog-instellingen');
+  await expect(dlg).toHaveJSProperty('open', true);
+  await expect(dlg.getByRole('heading', { name: 'Studio Noord V.O.F.' })).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(dlg).toHaveJSProperty('open', false);
+});
+
+test('paneel: modaal op een smal scherm (achtergrond sluit, pagina vergrendeld)', async ({ page }) => {
+  const paneel = await openPaneel(page, 1, { width: 800, height: 900 });
+  expect(await paneel.evaluate((el) => el.matches(':modal'))).toBe(true);
+  expect(await page.evaluate(() => getComputedStyle(document.documentElement).overflow)).toBe('hidden');
+  await page.mouse.click(40, 450); // op de achtergrond, links van het paneel
+  await expect(paneel).toHaveJSProperty('open', false);
+  expect(await page.evaluate(() => getComputedStyle(document.documentElement).overflow)).not.toBe('hidden');
+
+  // En met Esc, op een telefoon.
+  const p2 = await openPaneel(page, 2, schermen.mobiel);
+  expect(await p2.evaluate((el) => el.matches(':modal'))).toBe(true);
+  await page.keyboard.press('Escape');
+  await expect(p2).toHaveJSProperty('open', false);
+});
+
+/* ---------- Tabel: focus blijft staan bij opnieuw tekenen ---------- */
+test('tabel: focus blijft op de sorteerknop na sorteren met het toetsenbord', async ({ page }) => {
+  await page.goto('/index.html');
+  await page.waitForSelector('#dossiers table');
+  const knop = page.locator('.fs-sorteer[data-kolom="bedrag"]');
+  await knop.focus();
+  await page.keyboard.press('Enter');
+  await expect(page.locator('#dossiers th[aria-sort="ascending"]')).toBeVisible();
+  await expect(knop).toBeFocused();
+  await page.keyboard.press('Enter');
+  await expect(page.locator('#dossiers th[aria-sort="descending"]')).toBeVisible();
+  await expect(knop).toBeFocused();
 });

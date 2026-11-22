@@ -45,11 +45,26 @@ Is dit bestand in een ander project opgehaald, lees dan de bestanden uit de `fin
 | Instellingen in een grote dialoog (klik op een item, pas aan) | `<dialog class="fs-dialoog fs-dialoog--groot" data-bewaak-wijzigingen>` met één `<form method="dialog">`, `__kop` (titel + `__sub`), `__tabs` met `fs-tabs`, `__inhoud` met `role="tabpanel"`-panelen en `__acties`. Tabknoppen krijgen `type="button"`. Schakelaars: `fs-schakelaar`. Zie `index.html` voor het compleet voorbeeld |
 | Tabs | `fs-tabs` met `role="tablist"`, `role="tab"` (`aria-controls`, `aria-selected`) en `role="tabpanel"`; gedrag via `maakTabs()` uit `tabs.js` |
 | Naam in een tabelrij die een dialoog opent | `<button type="button" class="fs-koppeling" aria-haspopup="dialog">` |
+| Zijpaneel (klik op een item, kijk en pas snel aan) | `<dialog class="fs-zijpaneel" aria-labelledby>` met `__kop` (titel met `tabindex="-1"`, kruisje met `data-sluit`), `__inhoud` met `__sectie`, en `__acties`; openen met `openPaneel(el, { focusTerug })` uit `paneel.js` na `koppelPaneel(el)`. Overzicht als `<dl class="fs-kenmerken">`, instellingen als `fs-veld` en `fs-schakelaar`. Geef een gekozen item `aria-current="true"` |
 | Lege of laadstaat | `fs-leeg`, `fs-skelet` |
 | Bron en peildatum | `fs-herkomst` onder elk cijfer of elke grafiek |
 | Icoon | Lucide (`data-lucide`), geen andere iconenset |
 
 Externe libraries: alleen wat in `LIBRARIES.md` onder "Adopteren" staat. Wil je iets anders, kijk dan eerst of de regels onder "Regels voor een nieuwe library" het toelaten en vraag het aan een mens.
+
+## Toast, zijpaneel, dialoog of pagina
+
+Kies het lichtste middel dat de taak aankan; de uitleg staat in `DESIGN.md`. Neem deze volgorde:
+
+1. Geen beslissing nodig, alleen bevestigen wat net gebeurde → **toast** (`melding.succes(...)`). Iets dat de gebruiker moet lezen of waar actie op volgt → blijvende `fs-melding`.
+2. De gebruiker moet de lijst blijven zien en per item snel iets bekijken of aanpassen → **zijpaneel** (`fs-zijpaneel`, `paneel.js`). Wijzigingen gelden **direct** met een toast (liefst `melding.ongedaan`). **Geen Opslaan-knop, geen tabs.** Maximaal ongeveer vijf velden.
+3. Eén korte vraag of een paar velden → **kleine dialoog** (`fs-dialoog`). Onomkeerbaar of ingrijpend → `bevestig()`.
+4. Veel instellingen die samen bewaard worden → **grote dialoog met tabs** (`fs-dialoog--groot`, `data-bewaak-wijzigingen`).
+5. Past het niet, duurt het lang of moet het een eigen adres hebben → **pagina**.
+
+Opschaalpad: item aanklikken → zijpaneel → knop "Alle instellingen…" → grote dialoog → knop "Open dossier" → pagina. Elk niveau heeft één knop naar het volgende.
+
+Nooit: een dialoog in een dialoog (behalve `bevestig()`), tabs in een zijpaneel, een Opslaan-knop in een zijpaneel, een zijpaneel voor één ja/nee-vraag, een toast voor iets dat gelezen of beantwoord moet worden.
 
 ## Cijfers en grafieken
 
