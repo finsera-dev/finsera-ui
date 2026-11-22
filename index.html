@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Finsera UI</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400..800&display=swap">
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="components.css">
+<style>
+  /* Alleen voor deze documentatiepagina */
+  .doc-sectie { scroll-margin-top: 20px; }
+  .doc-sectie > h2 { font-size: var(--fs-kop-m); font-weight: 800; margin-bottom: var(--fs-r1); }
+  .doc-sectie > p { margin: 0 0 var(--fs-r4); color: var(--fs-tekst-zacht); max-width: 70ch; }
+  .doc-kleuren { display: grid; grid-template-columns: repeat(auto-fill, minmax(128px, 1fr)); gap: var(--fs-r2); }
+  .doc-kleur { border-radius: var(--fs-hoek-m); border: 1px solid var(--fs-rand); overflow: hidden; font-size: var(--fs-tekst-xs); font-weight: 700; }
+  .doc-kleur i { display: block; height: 44px; }
+  .doc-kleur span { display: block; padding: 6px 8px; background: var(--fs-vlak); }
+  .doc-kleur code { background: none; padding: 0; color: var(--fs-tekst-zacht); font-weight: 500; }
+  .doc-thema { margin-top: auto; padding: var(--fs-r3); }
+</style>
+<script type="importmap">{"imports":{"@tanstack/table-core":"https://cdn.jsdelivr.net/npm/@tanstack/table-core@8.21.3/+esm"}}</script>
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lucide@1.77.0/dist/umd/lucide.min.js"></script>
+</head>
+<body class="fs-basis">
+<div class="fs-schil">
+
+  <aside class="fs-zijbalk">
+    <div class="fs-merk">
+      <span class="fs-merk__teken">F</span>
+      <div><b>Finsera UI</b><small>Dashboard-library</small></div>
+    </div>
+    <a class="fs-nav is-actief" href="#voorbeeld"><i data-lucide="layout-dashboard"></i>Voorbeeld</a>
+    <a class="fs-nav" href="#kleur"><i data-lucide="palette"></i>Kleur</a>
+    <a class="fs-nav" href="#knoppen"><i data-lucide="square-pen"></i>Knoppen en velden</a>
+    <a class="fs-nav" href="#status"><i data-lucide="triangle-alert"></i>Status</a>
+    <a class="fs-nav" href="#data"><i data-lucide="chart-column"></i>Tabellen en grafieken</a>
+    <div class="doc-thema fs-segment" role="group" aria-label="Thema">
+      <button data-thema="auto" aria-pressed="true">Auto</button>
+      <button data-thema="light" aria-pressed="false">Licht</button>
+      <button data-thema="dark" aria-pressed="false">Donker</button>
+    </div>
+  </aside>
+
+  <main class="fs-inhoud">
+
+    <!-- ===== Voorbeelddashboard ===== -->
+    <section id="voorbeeld" class="doc-sectie fs-stapel">
+      <header class="fs-paginakop">
+        <div>
+          <h1>Omzet en openstaand</h1>
+          <p>Alle dossiers van Kantoor Voorbeeld, verzonnen data</p>
+        </div>
+        <div class="fs-acties">
+          <div class="fs-segment" role="group" aria-label="Periode" data-groep>
+            <button>Maand</button><button aria-pressed="true">Kwartaal</button><button>Jaar</button>
+          </div>
+          <button class="fs-knop"><i data-lucide="download"></i>Exporteren</button>
+          <button class="fs-knop fs-knop--primair">Nieuw dossier</button>
+        </div>
+      </header>
+
+      <div class="fs-melding fs-melding--waarschuwing" role="status">
+        <div><b>Koppeling met het boekhoudpakket is 2 dagen oud</b>De cijfers hieronder kunnen achterlopen. Vernieuw de koppeling om bij te werken.</div>
+      </div>
+
+      <div class="fs-raster" style="--fs-min:220px">
+        <article class="fs-kpi">
+          <span class="fs-kpi__label">Omzet</span>
+          <span class="fs-kpi__waarde">€ 1,24<small>mln</small></span>
+          <span class="fs-kpi__voet"><span class="fs-delta fs-delta--op">▲ 8,2%</span> t.o.v. vorig kwartaal</span>
+        </article>
+        <article class="fs-kpi">
+          <span class="fs-kpi__label">Openstaande facturen</span>
+          <span class="fs-kpi__waarde">€ 186<small>k</small></span>
+          <span class="fs-kpi__voet"><span class="fs-delta fs-delta--neer">▲ 14,0%</span> t.o.v. vorig kwartaal</span>
+        </article>
+        <article class="fs-kpi">
+          <span class="fs-kpi__label">Gemiddelde betaaltermijn</span>
+          <span class="fs-kpi__waarde">38<small>dagen</small></span>
+          <span class="fs-kpi__voet"><span class="fs-delta fs-delta--vlak">● 0 dagen</span> ongewijzigd</span>
+        </article>
+        <article class="fs-kpi">
+          <span class="fs-kpi__label">Dossiers in behandeling</span>
+          <span class="fs-kpi__waarde">42</span>
+          <span class="fs-kpi__voet"><span class="fs-badge fs-badge--waarschuwing">5 aandacht</span></span>
+        </article>
+      </div>
+
+      <div class="fs-raster fs-raster--2-1">
+        <section class="fs-kaart">
+          <div class="fs-kaart__kop">
+            <div><h2 class="fs-kaart__titel">Omzet per maand</h2><p class="fs-kaart__sub">Dit jaar tegenover vorig jaar, in duizenden euro's</p></div>
+            <ul class="fs-legenda"><li class="fs-reeks-1">Dit jaar</li><li class="fs-reeks-6">Vorig jaar</li></ul>
+          </div>
+          <div id="lijn" style="height:260px" role="img" aria-label="Omzet per maand, dit jaar tegenover vorig jaar"></div>
+          <p class="fs-herkomst"><span>Bron: Exact Online</span><span>Peildatum: 20 november 2026</span><span>Bedragen excl. btw</span></p>
+        </section>
+        <section class="fs-kaart">
+          <div class="fs-kaart__kop"><h2 class="fs-kaart__titel">Omzet per dienst</h2></div>
+          <ul class="fs-rangorde">
+            <li><span>Jaarrekening</span><span class="fs-meter"><span class="fs-reeks-1" style="--fs-waarde:92%"></span></span><span>€ 412k</span></li>
+            <li><span>Administratie</span><span class="fs-meter"><span class="fs-reeks-1" style="--fs-waarde:68%"></span></span><span>€ 305k</span></li>
+            <li><span>Fiscaal advies</span><span class="fs-meter"><span class="fs-reeks-1" style="--fs-waarde:41%"></span></span><span>€ 182k</span></li>
+            <li><span>Salaris</span><span class="fs-meter"><span class="fs-reeks-1" style="--fs-waarde:27%"></span></span><span>€ 121k</span></li>
+            <li><span>Overig</span><span class="fs-meter"><span class="fs-reeks-1" style="--fs-waarde:12%"></span></span><span>€ 54k</span></li>
+          </ul>
+          <p class="fs-herkomst"><span>Bron: Exact Online</span><span>20 november 2026</span></p>
+        </section>
+      </div>
+
+      <section class="fs-kaart">
+        <div class="fs-kaart__kop">
+          <h2 class="fs-kaart__titel">Dossiers die aandacht vragen</h2>
+          <div class="fs-rij"><input id="zoek" class="fs-invoer" style="width:220px" type="search" placeholder="Zoek op klant of status" aria-label="Zoeken"><button class="fs-knop fs-knop--klein">Filter</button></div>
+        </div>
+        <div id="dossiers"></div>
+        <p class="fs-herkomst" id="dossiers-telling" aria-live="polite"></p>
+      </section>
+    </section>
+
+    <!-- ===== Kleur ===== -->
+    <section id="kleur" class="doc-sectie">
+      <h2>Kleur</h2>
+      <p>Eén accent, rustige neutralen op een crème canvas. Status heeft vaste kleuren en komt altijd met tekst. Grafiekkleuren gebruik je in vaste volgorde.</p>
+      <div class="fs-kaart fs-stapel">
+        <div class="fs-label">Vlakken en tekst</div>
+        <div class="doc-kleuren" data-tokens="achtergrond vlak inzet inzet-2 tekst tekst-2 tekst-zacht lijn rand accent accent-zacht accent-inkt"></div>
+        <div class="fs-label">Status</div>
+        <div class="doc-kleuren" data-tokens="succes succes-zacht info info-zacht waarschuwing waarschuwing-zacht fout fout-zacht"></div>
+        <div class="fs-label">Grafiekreeksen</div>
+        <div class="doc-kleuren" data-tokens="reeks-1 reeks-2 reeks-3 reeks-4 reeks-5 reeks-6"></div>
+      </div>
+    </section>
+
+    <!-- ===== Knoppen en velden ===== -->
+    <section id="knoppen" class="doc-sectie">
+      <h2>Knoppen en velden</h2>
+      <p>Per scherm hooguit één primaire knop. Gevaarlijke acties krijgen altijd een bevestiging.</p>
+      <div class="fs-kaart fs-stapel">
+        <div class="fs-rij">
+          <button class="fs-knop fs-knop--primair">Primair</button>
+          <button class="fs-knop">Standaard</button>
+          <button class="fs-knop fs-knop--tekst">Tekst</button>
+          <button class="fs-knop fs-knop--gevaar">Verwijderen</button>
+          <button class="fs-knop" disabled>Uitgeschakeld</button>
+          <button class="fs-knop fs-knop--klein">Klein</button>
+        </div>
+        <div class="fs-raster" style="--fs-min:220px">
+          <label class="fs-veld">Bedrijfsnaam<input class="fs-invoer" value="Bakkerij De Gouden Korst"></label>
+          <label class="fs-veld">KvK-nummer<input class="fs-invoer" value="1234" aria-invalid="true"><span class="fs-veld__fout">Een KvK-nummer heeft 8 cijfers.</span></label>
+          <label class="fs-veld">Boekjaar<select class="fs-select"><option>2026</option><option>2025</option></select></label>
+        </div>
+        <div class="fs-rij"><label class="fs-vink"><input type="checkbox" checked> Herinnering sturen</label><label class="fs-vink"><input type="checkbox"> Concept bewaren</label></div>
+        <div class="fs-tabs" role="tablist"><button role="tab" aria-selected="true">Overzicht</button><button role="tab">Documenten</button><button role="tab">Geschiedenis</button></div>
+      </div>
+    </section>
+
+    <!-- ===== Status ===== -->
+    <section id="status" class="doc-sectie">
+      <h2>Status en meldingen</h2>
+      <p>Badge voor een toestand, melding voor iets dat de gebruiker moet weten. Niet-lege toestand en lege toestand horen allebei ontworpen te zijn.</p>
+      <div class="fs-kaart fs-stapel">
+        <div class="fs-rij">
+          <span class="fs-badge">Concept</span><span class="fs-badge fs-badge--accent">Actief</span><span class="fs-badge fs-badge--succes">Akkoord</span>
+          <span class="fs-badge fs-badge--info">In controle</span><span class="fs-badge fs-badge--waarschuwing">Wacht op klant</span><span class="fs-badge fs-badge--fout">Achterstallig</span>
+        </div>
+        <div class="fs-melding"><div><b>Nieuwe versie beschikbaar</b>Het contract is bijgewerkt naar 1.17.0.</div></div>
+        <div class="fs-melding fs-melding--succes"><div><b>Opgeslagen</b>De wijziging staat in het dossier.</div></div>
+        <div class="fs-melding fs-melding--fout" role="alert"><div><b>Importeren mislukt</b>Het bestand is geen geldig auditfile.</div></div>
+        <div class="fs-raster fs-raster--1-1">
+          <div class="fs-tabelrand"><div class="fs-leeg"><h3>Nog geen dossiers</h3><p>Maak je eerste dossier aan of importeer een auditfile.</p><button class="fs-knop fs-knop--primair">Dossier aanmaken</button></div></div>
+          <div class="fs-tabelrand fs-stapel" style="padding:16px" aria-busy="true" aria-label="Laden"><span class="fs-skelet" style="height:18px;width:60%"></span><span class="fs-skelet" style="height:14px"></span><span class="fs-skelet" style="height:14px;width:85%"></span><span class="fs-skelet" style="height:14px;width:40%"></span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Data ===== -->
+    <section id="data" class="doc-sectie">
+      <h2>Tabellen en grafieken</h2>
+      <p>Cijfers staan rechts uitgelijnd met tabulaire cijfers. Grote grafieken gebruiken Apache ECharts via charts.js (kleuren uit de tokens, nooit hex-waarden); kleine trendlijntjes mogen inline SVG met de reeksklassen zijn. Toon bron en peildatum onder elk cijfer.</p>
+      <div class="fs-kaart fs-stapel">
+        <div id="staaf" style="height:260px" role="img" aria-label="Gestapelde staafgrafiek per kwartaal"></div>
+        <ul class="fs-legenda"><li class="fs-reeks-1">Jaarrekening</li><li class="fs-reeks-2">Administratie</li><li class="fs-reeks-3">Fiscaal</li></ul>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script type="module">
+/* Thema-schakelaar (alleen documentatie) */
+const root = document.documentElement;
+document.querySelectorAll('[data-thema]').forEach(b => b.addEventListener('click', () => {
+  const t = b.dataset.thema;
+  t === 'auto' ? root.removeAttribute('data-theme') : root.setAttribute('data-theme', t);
+  document.querySelectorAll('[data-thema]').forEach(x => x.setAttribute('aria-pressed', x === b));
+}));
+/* Segment: één actief */
+document.querySelectorAll('[data-groep]').forEach(g => g.addEventListener('click', e => {
+  if (e.target.tagName !== 'BUTTON') return;
+  g.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x === e.target));
+}));
+/* Kleurvlakken */
+document.querySelectorAll('[data-tokens]').forEach(el => el.dataset.tokens.split(' ').forEach(n => {
+  el.insertAdjacentHTML('beforeend', `<div class="doc-kleur"><i style="background:var(--fs-${n})"></i><span>${n}<br><code>--fs-${n}</code></span></div>`);
+}));
+
+/* Tabel: TanStack Table via tabel.js */
+import('./tabel.js').then(({ maakTabel }) => {
+  const eur = new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR' });
+  const STATUS = { wacht: ['waarschuwing', 'Wacht op klant'], achter: ['fout', 'Achterstallig'], controle: ['info', 'In controle'], akkoord: ['succes', 'Akkoord'] };
+  const data = [
+    { naam: 'Bakkerij De Gouden Korst B.V.', status: 'wacht', voortgang: 64, bedrag: 12480, dagen: 52 },
+    { naam: 'Studio Noord V.O.F.', status: 'achter', voortgang: 22, bedrag: 31905.5, dagen: 88 },
+    { naam: 'Van der Meer Installatie B.V.', status: 'controle', voortgang: 85, bedrag: 4120, dagen: 21 },
+    { naam: 'Holding Zuidpark B.V.', status: 'akkoord', voortgang: 100, bedrag: 0, dagen: 14 },
+    { naam: 'Fysio Oosterpoort', status: 'wacht', voortgang: 40, bedrag: 2210.75, dagen: 35 },
+    { naam: 'Bouwbedrijf Hendriks B.V.', status: 'achter', voortgang: 30, bedrag: 18760, dagen: 71 },
+    { naam: 'Tuincentrum Het Groen', status: 'controle', voortgang: 90, bedrag: 940, dagen: 18 },
+  ];
+  const meter = (v, fout) => `<span class="fs-meter${fout ? ' fs-meter--fout' : ''}"><span style="--fs-waarde:${v}%"></span></span>`;
+  const telling = document.getElementById('dossiers-telling');
+  const t = maakTabel(document.getElementById('dossiers'), {
+    data, bijschrift: 'Dossiers die aandacht vragen',
+    kolommen: [
+      { id: 'klant', kop: 'Klant', waarde: (r) => r.naam, rijkop: true },
+      { id: 'status', kop: 'Status', waarde: (r) => STATUS[r.status][1], cel: (r) => `<span class="fs-badge fs-badge--${STATUS[r.status][0]}">${STATUS[r.status][1]}</span>` },
+      { id: 'voortgang', kop: 'Voortgang', waarde: (r) => r.voortgang, breedte: '160px', cel: (r) => meter(r.voortgang, r.status === 'achter') },
+      { id: 'bedrag', kop: 'Openstaand', waarde: (r) => r.bedrag, getal: true, cel: (r) => eur.format(r.bedrag) },
+      { id: 'dagen', kop: 'Termijn', waarde: (r) => r.dagen, getal: true, cel: (r) => r.dagen + ' dagen' },
+    ],
+    voet: (rijen) => `<tr><th scope="row" colspan="3">Totaal</th><td class="fs-getal">${eur.format(rijen.reduce((s, r) => s + r.bedrag, 0))}</td><td></td></tr>`,
+    leeg: { titel: 'Geen dossiers gevonden', tekst: 'Pas je zoekopdracht aan of wis het filter.' },
+    onWijziging: ({ aantal, totaal }) => { telling.innerHTML = `<span>${aantal} van ${totaal} dossiers</span><span>Bron: Exact Online</span><span>Peildatum: 20 november 2026</span>`; },
+  });
+  document.getElementById('zoek').addEventListener('input', (e) => t.zoek(e.target.value));
+});
+lucide.createIcons();
+/* Grafieken: ECharts via charts.js, kleuren komen uit de tokens */
+import('./charts.js').then(({ maakGrafiek, euro }) => {
+  const mnd = ['jan','feb','mrt','apr','mei','jun','jul','aug','sep','okt','nov','dec'];
+  const dit = [88,94,101,97,108,112,105,118,121,116,126], vorig = [80,83,90,92,96,99,98,104,106,107,110,118];
+  const k = (v) => euro(v * 1000);
+  maakGrafiek(document.getElementById('lijn'), () => ({
+    tooltip: { trigger: 'axis', valueFormatter: k },
+    xAxis: { type: 'category', data: mnd, boundaryGap: false },
+    yAxis: { type: 'value', max: 140, axisLabel: { formatter: '{value}' } },
+    series: [
+      { name: 'Vorig jaar', type: 'line', data: vorig, symbol: 'none', lineStyle: { type: 'dotted', width: 2.5, color: getComputedStyle(document.documentElement).getPropertyValue('--fs-reeks-6') }, itemStyle: { color: getComputedStyle(document.documentElement).getPropertyValue('--fs-reeks-6') } },
+      { name: 'Dit jaar', type: 'line', data: dit, showSymbol: false, emphasis: { focus: 'series' }, markPoint: { symbolSize: 10, symbol: 'circle', data: [{ coord: ['nov', 126] }], label: { show: false } } },
+    ],
+  }));
+  const kw = ['K1','K2','K3','K4'];
+  const reeks = (naam, data) => ({ name: naam, type: 'bar', stack: 'omzet', data, emphasis: { focus: 'series' }, itemStyle: { borderRadius: 0, borderColor: getComputedStyle(document.documentElement).getPropertyValue('--fs-vlak'), borderWidth: 1 } });
+  maakGrafiek(document.getElementById('staaf'), () => ({
+    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' }, valueFormatter: k },
+    xAxis: { type: 'category', data: kw },
+    yAxis: { type: 'value', max: 320, interval: 80 },
+    series: [reeks('Jaarrekening', [110,125,118,140]), reeks('Administratie', [80,86,92,98]), reeks('Fiscaal', [40,46,52,58])],
+  }));
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,42 @@
+/*
+ * Tailwind v4-brug voor dashboards die Tailwind al gebruiken (bijvoorbeeld ui-prototype, of shadcn/ui erbovenop).
+ * Importeer na tailwindcss en tokens.css:
+ *   @import 'tailwindcss';
+ *   @import 'finsera-ui/tokens.css';
+ *   @import 'finsera-ui/tailwind-theme.css';
+ * Daarna werken bg-vlak, text-tekst-zacht, border-rand, rounded-kaart, enzovoort, en volgen ze licht/donker automatisch.
+ */
+@theme inline {
+  --color-achtergrond: var(--fs-achtergrond);
+  --color-vlak: var(--fs-vlak);
+  --color-inzet: var(--fs-inzet);
+  --color-inzet-2: var(--fs-inzet-2);
+  --color-tekst: var(--fs-tekst);
+  --color-tekst-2: var(--fs-tekst-2);
+  --color-tekst-zacht: var(--fs-tekst-zacht);
+  --color-lijn: var(--fs-lijn);
+  --color-rand: var(--fs-rand);
+  --color-accent: var(--fs-accent);
+  --color-accent-tekst: var(--fs-accent-tekst);
+  --color-accent-zacht: var(--fs-accent-zacht);
+  --color-accent-inkt: var(--fs-accent-inkt);
+  --color-succes: var(--fs-succes);
+  --color-succes-zacht: var(--fs-succes-zacht);
+  --color-info: var(--fs-info);
+  --color-info-zacht: var(--fs-info-zacht);
+  --color-waarschuwing: var(--fs-waarschuwing);
+  --color-waarschuwing-zacht: var(--fs-waarschuwing-zacht);
+  --color-fout: var(--fs-fout);
+  --color-fout-zacht: var(--fs-fout-zacht);
+  --color-reeks-1: var(--fs-reeks-1);
+  --color-reeks-2: var(--fs-reeks-2);
+  --color-reeks-3: var(--fs-reeks-3);
+  --color-reeks-4: var(--fs-reeks-4);
+  --color-reeks-5: var(--fs-reeks-5);
+  --color-reeks-6: var(--fs-reeks-6);
+  --font-sans: var(--fs-lettertype);
+  --font-mono: var(--fs-mono);
+  --radius-knop: 14px;
+  --radius-kaart: var(--fs-hoek-xl);
+  --shadow-zwevend: var(--fs-schaduw);
+}

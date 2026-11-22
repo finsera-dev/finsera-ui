@@ -1,0 +1,143 @@
+/*
+ * Finsera UI — ontwerptokens.
+ * Alle kleuren, maten en lettertypes van de dashboards staan hier en nergens anders.
+ * Componenten (components.css) gebruiken uitsluitend deze variabelen: nooit een losse hex-waarde.
+ * Thema: licht is de standaard; donker volgt het systeem, tenzij <html data-theme="light|dark"> iets afdwingt.
+ */
+:root {
+  /* Vlakken */
+  --fs-achtergrond: #f4f2ed;      /* canvas achter alles */
+  --fs-vlak: #ffffff;             /* kaarten en panelen */
+  --fs-inzet: #f4f2ed;            /* vlak binnen een kaart (tabelrand, tegel) */
+  --fs-inzet-2: #ece9e2;          /* hover, spoor van een meter */
+
+  /* Tekst */
+  --fs-tekst: #15171c;
+  --fs-tekst-2: #3d4048;
+  --fs-tekst-zacht: #5b5f68;      /* labels, hulpteksten (contrast ≥ 4,5:1 op vlak) */
+
+  /* Lijnen */
+  --fs-lijn: #efece5;             /* scheiding binnen een kaart */
+  --fs-rand: #d9d5cb;             /* rand van invoer en knop */
+  --fs-rand-2: #c9c4b8;
+
+  /* Accent: precies één per dashboard-familie */
+  --fs-accent: #0f6e5e;
+  --fs-accent-tekst: #ffffff;
+  --fs-accent-zacht: #e3f1ec;
+  --fs-accent-inkt: #0b5348;
+
+  /* Status: kleur draagt nooit alleen de betekenis, er staat altijd tekst of icoon bij */
+  --fs-succes: #1f7a4d;   --fs-succes-zacht: #e4f3ea;
+  --fs-info: #1f5fae;     --fs-info-zacht: #e3eefa;
+  --fs-waarschuwing: #7a4900; --fs-waarschuwing-zacht: #fdf0dc;
+  --fs-fout: #a23a0c;     --fs-fout-zacht: #fbe6dc;
+
+  /* Grafieken: categorisch, in vaste volgorde gebruiken (reeks 1 = accent) */
+  --fs-reeks-1: #0f6e5e;
+  --fs-reeks-2: #2f5d8a;
+  --fs-reeks-3: #c2791a;
+  --fs-reeks-4: #8a4f9e;
+  --fs-reeks-5: #b3472f;
+  --fs-reeks-6: #6b7480;
+  --fs-as: #9a968c;               /* aslabels en rasterlijnen in grafieken */
+
+  /* Lettertype */
+  --fs-lettertype: 'Manrope Variable', Manrope, 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --fs-mono: ui-monospace, 'JetBrains Mono', SFMono-Regular, Menlo, monospace;
+  --fs-tekst-xs: 12px;
+  --fs-tekst-s: 13px;
+  --fs-tekst-m: 14px;             /* standaard in tabellen en dashboards */
+  --fs-tekst-l: 15px;             /* lopende tekst */
+  --fs-kop-s: 18px;
+  --fs-kop-m: 22px;
+  --fs-kop-l: 28px;
+  --fs-cijfer: 32px;              /* grote KPI-waarde */
+
+  /* Ruimte: 4px-raster */
+  --fs-r1: 4px;  --fs-r2: 8px;  --fs-r3: 12px;  --fs-r4: 16px;
+  --fs-r5: 20px; --fs-r6: 24px; --fs-r8: 32px;  --fs-r10: 40px;
+
+  /* Vorm */
+  --fs-hoek-s: 8px;
+  --fs-hoek-m: 12px;
+  --fs-hoek-l: 16px;
+  --fs-hoek-xl: 22px;             /* kaarten */
+  --fs-hoek-rond: 999px;
+
+  /* Diepte: spaarzaam. Kaarten hebben geen schaduw, alleen zwevende lagen */
+  --fs-schaduw: 0 12px 28px rgba(21, 23, 28, 0.08);
+  --fs-schaduw-klein: 0 1px 2px rgba(21, 23, 28, 0.06);
+
+  /* Beweging */
+  --fs-duur: 0.18s;
+  --fs-ease: cubic-bezier(0.2, 0, 0, 1);
+
+  /* Breedtes */
+  --fs-zijbalk: 232px;
+  --fs-pagina-max: 1360px;
+
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --fs-achtergrond: #111215;
+    --fs-vlak: #1b1d22;
+    --fs-inzet: #23262c;
+    --fs-inzet-2: #2c3038;
+    --fs-tekst: #f2f0ea;
+    --fs-tekst-2: #d6d3cb;
+    --fs-tekst-zacht: #a3a7b0;
+    --fs-lijn: #2a2d34;
+    --fs-rand: #3a3e47;
+    --fs-rand-2: #4a4f5a;
+    --fs-accent: #3fa68f;
+    --fs-accent-tekst: #08130f;
+    --fs-accent-zacht: #17342e;
+    --fs-accent-inkt: #9fd8c8;
+    --fs-succes: #6fcf9a;   --fs-succes-zacht: #15301f;
+    --fs-info: #8db8ee;     --fs-info-zacht: #16263b;
+    --fs-waarschuwing: #f3c77a; --fs-waarschuwing-zacht: #3a2b0f;
+    --fs-fout: #f2a98a;     --fs-fout-zacht: #3b1e12;
+    --fs-reeks-1: #3fa68f;
+    --fs-reeks-2: #7aa5d6;
+    --fs-reeks-3: #e0a04a;
+    --fs-reeks-4: #b88bc9;
+    --fs-reeks-5: #e08a72;
+    --fs-reeks-6: #9aa3ad;
+    --fs-as: #7d818a;
+    --fs-schaduw: 0 12px 28px rgba(0, 0, 0, 0.4);
+    --fs-schaduw-klein: 0 1px 2px rgba(0, 0, 0, 0.3);
+  }
+}
+
+:root[data-theme='dark'] {
+  --fs-achtergrond: #111215;
+  --fs-vlak: #1b1d22;
+  --fs-inzet: #23262c;
+  --fs-inzet-2: #2c3038;
+  --fs-tekst: #f2f0ea;
+  --fs-tekst-2: #d6d3cb;
+  --fs-tekst-zacht: #a3a7b0;
+  --fs-lijn: #2a2d34;
+  --fs-rand: #3a3e47;
+  --fs-rand-2: #4a4f5a;
+  --fs-accent: #3fa68f;
+  --fs-accent-tekst: #08130f;
+  --fs-accent-zacht: #17342e;
+  --fs-accent-inkt: #9fd8c8;
+  --fs-succes: #6fcf9a;   --fs-succes-zacht: #15301f;
+  --fs-info: #8db8ee;     --fs-info-zacht: #16263b;
+  --fs-waarschuwing: #f3c77a; --fs-waarschuwing-zacht: #3a2b0f;
+  --fs-fout: #f2a98a;     --fs-fout-zacht: #3b1e12;
+  --fs-reeks-1: #3fa68f;
+  --fs-reeks-2: #7aa5d6;
+  --fs-reeks-3: #e0a04a;
+  --fs-reeks-4: #b88bc9;
+  --fs-reeks-5: #e08a72;
+  --fs-reeks-6: #9aa3ad;
+  --fs-as: #7d818a;
+  --fs-schaduw: 0 12px 28px rgba(0, 0, 0, 0.4);
+  --fs-schaduw-klein: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
