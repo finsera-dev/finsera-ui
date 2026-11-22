@@ -64,14 +64,16 @@ Externe libraries: alleen wat in `LIBRARIES.md` onder "Adopteren" staat. Wil je 
 
 ## Controlelijst voor je klaar bent
 
-- [ ] Geen hex-waarden of losse maten in de CSS van het project (`grep -rEn '#[0-9a-fA-F]{3,8}\b|rgb\(' src`)
+- [ ] `npx stylelint "src/**/*.css"` geeft geen fouten (geen hex-waarden, kleurnamen of kleurfuncties; kleur en lettertype alleen via `var(--fs-…)`)
 - [ ] Alleen `fs-`-klassen voor opmaak, geen kale elementen gestyled
 - [ ] Werkt in licht én donker (zet `<html data-theme="dark">` en kijk)
 - [ ] Werkt op mobiel (smal venster) zonder horizontaal scrollen van de pagina
 - [ ] Lege staat, laadstaat en foutstaat bestaan voor elk blok met data
 - [ ] Bij elk cijfer en elke grafiek staan bron en peildatum
-- [ ] Alles bedienbaar met toetsenbord, focusring zichtbaar
+- [ ] Alles bedienbaar met toetsenbord, focusring zichtbaar; axe-controle (`@axe-core/playwright`, WCAG 2.1 A en AA) geeft geen fouten
 - [ ] Teksten in het Nederlands, knoppen zijn werkwoorden
 - [ ] Je hebt het scherm daadwerkelijk bekeken in een browser, niet alleen de code geschreven
 
 Uitleg waarom deze regels er zijn staat in `DESIGN.md`. Bij twijfel wint de regel die het cijfer sneller leesbaar of betrouwbaarder maakt.
+
+In deze repo zelf draai je alles met `npm run check` (Stylelint en axe in licht en donker, desktop en mobiel). Een onderdeel dat daar faalt, is niet klaar.

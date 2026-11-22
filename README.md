@@ -9,6 +9,7 @@ Gedeelde stijl, ontwerpfilosofie en onderdelen voor alle Finsera-dashboards. Gew
 | `charts.js` | Koppeling tokens ↔ Apache ECharts (thema, licht/donker, resize, `euro()`) |
 | `tabel.js` | Sorteerbare en filterbare tabel: TanStack Table (8.21.3) met `.fs-tabel`-opmaak |
 | `toast.js`, `toast.css` | Toasts: vanilla-sonner (0.7.0) met onze tokens en Nederlandse helpers (`melding.succes`, `melding.fout`, …) |
+| `stylelint-config.mjs` | Stylelint-regels die de tokens afdwingen (geen losse kleuren of lettertypes); deelbaar met andere projecten |
 | `tailwind-theme.css` | Tailwind v4-brug: `bg-vlak`, `text-tekst-zacht` enzovoort wijzen naar de tokens |
 | `AGENTS.md` | Instructies voor LLM's die een dashboard bouwen: regels, onderdelenlijst, controlelijst |
 | `DESIGN.md` | Principes en regels: lees dit eerst |
@@ -66,3 +67,24 @@ Lees die bestanden uit de dependency (`node_modules/finsera-ui/`) of de map erna
 ```
 
 Zorg dat `AGENTS.md` meekomt in de dependency door het in `files` van `package.json` op te nemen.
+
+## Controle
+
+```bash
+npm install
+npm run check        # Stylelint en axe-toegankelijkheidstest (Playwright)
+```
+
+- `npm run lint:css`: Stylelint met `stylelint-config.mjs`. Faalt op hex-waarden, kleurnamen en kleurfuncties buiten `tokens.css`, en op kleur- of lettertype-eigenschappen zonder `var(--fs-…)`.
+- `npm run test:a11y`: opent `index.html` in licht en donker, op desktop en mobiel, met toasts zichtbaar, en draait axe (WCAG 2.1 A en AA). Vereist internet voor de CDN-bestanden en een Chromium-browser (`npx playwright install chromium`).
+- GitHub Actions (`.github/workflows/check.yml`) draait dit bij elke push naar `main` en bij elke pull request.
+
+Een ander project gebruikt dezelfde CSS-regels:
+
+```js
+// stylelint.config.mjs  (npm i -D stylelint@17 stylelint-declaration-strict-value)
+import config from 'finsera-ui/stylelint-config';
+export default config;
+```
+
+Stylelint 18 vraagt Node 24.15 of hoger; op oudere Node-versies gebruik je Stylelint 17. De regels lezen alleen `.css`-bestanden, niet de `<style>`-blokken in HTML.

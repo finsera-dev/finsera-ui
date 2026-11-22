@@ -14,7 +14,8 @@
     "LIBRARIES.md",
     "index.html",
     "toast.js",
-    "toast.css"
+    "toast.css",
+    "stylelint-config.mjs"
   ],
   "exports": {
     "./tokens.css": "./tokens.css",
@@ -23,6 +24,18 @@
     "./tabel.js": "./tabel.js",
     "./tailwind-theme.css": "./tailwind-theme.css",
     "./toast.js": "./toast.js",
-    "./toast.css": "./toast.css"
+    "./toast.css": "./toast.css",
+    "./stylelint-config": "./stylelint-config.mjs"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
+    "@playwright/test": "1.65.0",
+    "stylelint": "^17.16.0",
+    "stylelint-declaration-strict-value": "^1.13.0"
+  },
+  "scripts": {
+    "lint:css": "stylelint \"*.css\"",
+    "test:a11y": "playwright test",
+    "check": "npm run lint:css && npm run test:a11y"
   }
 }

@@ -21,9 +21,12 @@ function zorgVoorContainer() {
   if (klaar) return;
   klaar = true;
   if (!document.getElementById('sonner-toast-container')) {
-    const ol = document.createElement('ol');
-    ol.id = 'sonner-toast-container';
-    document.body.appendChild(ol);
+    // Bewust een <div> en geen <ol>: de library geeft elke toast role="status"/"alert", waardoor het geen
+    // lijstitem meer is en een <ol> als ongeldige lijst telt (axe-regel "list").
+    const houder = document.createElement('div');
+    houder.id = 'sonner-toast-container';
+    houder.setAttribute('role', 'region');
+    document.body.appendChild(houder);
   }
   toast.configure({
     position: 'bottom-right',
