@@ -118,7 +118,7 @@
           <div class="fs-rij"><input id="zoek" class="fs-invoer" style="width:220px" type="search" placeholder="Zoek op klant of status" aria-label="Zoeken"><button class="fs-knop fs-knop--klein">Filter</button></div>
         </div>
         <div id="dossiers"></div>
-        <p class="fs-herkomst" id="dossiers-telling" aria-live="polite"></p>
+        <p class="fs-herkomst" id="dossiers-telling" aria-live="polite"><span>Klik op een klant om de instellingen te openen.</span></p>
       </section>
     </section>
 
@@ -180,6 +180,7 @@
         <div class="fs-label">Dialogen</div>
         <div class="fs-rij">
           <button class="fs-knop" id="dialoog-open">Dossier aanmaken</button>
+          <button class="fs-knop" id="dialoog-instellingen-open">Instellingen (groot, met tabs)</button>
           <button class="fs-knop fs-knop--gevaar" id="dialoog-verwijder">Dossier verwijderen</button>
         </div>
         <dialog class="fs-dialoog" id="dialoog-nieuw" aria-labelledby="dialoog-nieuw-titel">
@@ -220,6 +221,68 @@
   </main>
 </div>
 
+
+<dialog class="fs-dialoog fs-dialoog--groot" id="dialoog-instellingen" aria-labelledby="instellingen-titel" data-bewaak-wijzigingen>
+  <form method="dialog">
+    <div class="fs-dialoog__kop">
+      <div><h2 class="fs-dialoog__titel" id="instellingen-titel">Dossier</h2><p class="fs-dialoog__sub" id="instellingen-sub"></p></div>
+      <button type="button" class="fs-knop fs-knop--tekst fs-knop--icoon" data-sluit aria-label="Sluiten"><i data-lucide="x"></i></button>
+    </div>
+    <div class="fs-dialoog__tabs">
+      <div class="fs-tabs" role="tablist" aria-label="Instellingen van het dossier">
+        <button type="button" role="tab" id="ti-algemeen" aria-controls="pi-algemeen" aria-selected="true">Algemeen</button>
+        <button type="button" role="tab" id="ti-toegang" aria-controls="pi-toegang">Toegang</button>
+        <button type="button" role="tab" id="ti-meldingen" aria-controls="pi-meldingen">Meldingen</button>
+        <button type="button" role="tab" id="ti-geavanceerd" aria-controls="pi-geavanceerd">Geavanceerd</button>
+      </div>
+    </div>
+    <div class="fs-dialoog__inhoud">
+      <div role="tabpanel" id="pi-algemeen" aria-labelledby="ti-algemeen" tabindex="0">
+        <div class="fs-stapel">
+          <div class="fs-raster" style="--fs-min:220px">
+            <label class="fs-veld">Bedrijfsnaam<input class="fs-invoer" name="naam" required autofocus autocomplete="off"></label>
+            <label class="fs-veld">KvK-nummer<input class="fs-invoer" name="kvk" inputmode="numeric" pattern="[0-9]{8}" title="8 cijfers" autocomplete="off"></label>
+            <label class="fs-veld">Status<select class="fs-select" name="status"><option value="wacht">Wacht op klant</option><option value="controle">In controle</option><option value="achter">Achterstallig</option><option value="akkoord">Akkoord</option></select></label>
+            <label class="fs-veld">Boekjaar<select class="fs-select" name="boekjaar"><option>2026</option><option>2025</option></select></label>
+          </div>
+          <label class="fs-veld">Notitie voor het kantoor<textarea class="fs-invoer" name="notitie" rows="4"></textarea></label>
+        </div>
+      </div>
+      <div role="tabpanel" id="pi-toegang" aria-labelledby="ti-toegang" tabindex="0" hidden>
+        <div class="fs-tabelrand"><table class="fs-tabel fs-tabel--compact">
+          <caption class="fs-verborgen">Medewerkers met toegang tot dit dossier</caption>
+          <thead><tr><th scope="col">Medewerker</th><th scope="col">Rol</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Sanne de Vries</th><td><select class="fs-select" name="rol-sanne" aria-label="Rol van Sanne de Vries"><option>Beheerder</option><option>Medewerker</option><option>Alleen lezen</option></select></td></tr>
+            <tr><th scope="row">Mehmet Yilmaz</th><td><select class="fs-select" name="rol-mehmet" aria-label="Rol van Mehmet Yilmaz"><option>Beheerder</option><option selected>Medewerker</option><option>Alleen lezen</option></select></td></tr>
+            <tr><th scope="row">Lotte Bakker</th><td><select class="fs-select" name="rol-lotte" aria-label="Rol van Lotte Bakker"><option>Beheerder</option><option>Medewerker</option><option selected>Alleen lezen</option></select></td></tr>
+          </tbody>
+        </table></div>
+      </div>
+      <div role="tabpanel" id="pi-meldingen" aria-labelledby="ti-meldingen" tabindex="0" hidden>
+        <div class="fs-stapel">
+          <label class="fs-schakelaar"><span>E-mail bij nieuwe documenten<small>Direct na elke upload van de klant.</small></span><input type="checkbox" role="switch" name="mail-documenten" checked></label>
+          <label class="fs-schakelaar"><span>Wekelijks overzicht<small>Elke maandagochtend, met de stand van het dossier.</small></span><input type="checkbox" role="switch" name="mail-week"></label>
+          <label class="fs-schakelaar"><span>Waarschuwing bij facturen ouder dan 60 dagen<small>Alleen voor openstaande facturen.</small></span><input type="checkbox" role="switch" name="mail-facturen" checked></label>
+        </div>
+      </div>
+      <div role="tabpanel" id="pi-geavanceerd" aria-labelledby="ti-geavanceerd" tabindex="0" hidden>
+        <div class="fs-stapel">
+          <div class="fs-melding fs-melding--waarschuwing"><div><b>Let op</b>Archiveren verbergt het dossier voor medewerkers. Verwijderen kan niet ongedaan worden gemaakt.</div></div>
+          <div class="fs-rij">
+            <button type="button" class="fs-knop" id="instellingen-archiveer">Dossier archiveren</button>
+            <button type="button" class="fs-knop fs-knop--gevaar" id="instellingen-verwijder">Dossier verwijderen</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="fs-dialoog__acties">
+      <button type="button" class="fs-knop" data-sluit>Annuleren</button>
+      <button class="fs-knop fs-knop--primair" value="opslaan">Instellingen opslaan</button>
+    </div>
+  </form>
+</dialog>
+
 <script type="module">
 /* Thema-schakelaar (alleen documentatie) */
 const root = document.documentElement;
@@ -256,7 +319,7 @@ import('./tabel.js').then(({ maakTabel }) => {
   const t = maakTabel(document.getElementById('dossiers'), {
     data, bijschrift: 'Dossiers die aandacht vragen',
     kolommen: [
-      { id: 'klant', kop: 'Klant', waarde: (r) => r.naam, rijkop: true },
+      { id: 'klant', kop: 'Klant', waarde: (r) => r.naam, rijkop: true, cel: (r) => `<button type="button" class="fs-koppeling" data-dossier="${data.indexOf(r)}" aria-haspopup="dialog">${r.naam}</button>` },
       { id: 'status', kop: 'Status', waarde: (r) => STATUS[r.status][1], cel: (r) => `<span class="fs-badge fs-badge--${STATUS[r.status][0]}">${STATUS[r.status][1]}</span>` },
       { id: 'voortgang', kop: 'Voortgang', waarde: (r) => r.voortgang, breedte: '160px', cel: (r) => meter(r.voortgang, r.status === 'achter') },
       { id: 'bedrag', kop: 'Openstaand', waarde: (r) => r.bedrag, getal: true, cel: (r) => eur.format(r.bedrag) },
@@ -267,6 +330,10 @@ import('./tabel.js').then(({ maakTabel }) => {
     onWijziging: ({ aantal, totaal }) => { telling.innerHTML = `<span>${aantal} van ${totaal} dossiers</span><span>Bron: Exact Online</span><span>Peildatum: 20 november 2026</span>`; },
   });
   document.getElementById('zoek').addEventListener('input', (e) => t.zoek(e.target.value));
+  document.getElementById('dossiers').addEventListener('click', (e) => {
+    const knop = e.target.closest('[data-dossier]');
+    if (knop) document.dispatchEvent(new CustomEvent('open-dossier', { detail: { ...data[knop.dataset.dossier], index: Number(knop.dataset.dossier) } }));
+  });
 });
 
 /* Toasts: vanilla-sonner via toast.js */
@@ -291,6 +358,33 @@ Promise.all([import('./dialoog.js'), import('./toast.js')]).then(([{ open, koppe
   document.getElementById('dialoog-verwijder').addEventListener('click', async () => {
     const ja = await bevestig({ titel: 'Dossier verwijderen?', tekst: 'Alle documenten in dit dossier worden ook verwijderd. Dit kan niet ongedaan worden gemaakt.', bevestigtekst: 'Dossier verwijderen', gevaarlijk: true });
     melding[ja ? 'succes' : 'bericht'](ja ? 'Dossier verwijderd' : 'Niets verwijderd');
+  });
+});
+
+/* Grote dialoog met tabs: klik op een dossier, pas de instellingen aan */
+Promise.all([import('./dialoog.js'), import('./toast.js')]).then(([{ open, koppel, bevestig }, { melding }]) => {
+  const dlg = document.getElementById('dialoog-instellingen');
+  const form = dlg.querySelector('form');
+  koppel(dlg);
+  const euro = new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR' });
+  const STATUS = { wacht: 'Wacht op klant', achter: 'Achterstallig', controle: 'In controle', akkoord: 'Akkoord' };
+  const toon = (d) => {
+    form.reset();
+    document.getElementById('instellingen-titel').textContent = d.naam;
+    document.getElementById('instellingen-sub').textContent = `${STATUS[d.status]} · openstaand ${euro.format(d.bedrag)}`;
+    form.naam.value = d.naam;
+    form.kvk.value = String(12000000 + d.index * 345678).slice(0, 8);
+    form.status.value = d.status;
+    open(dlg);
+  };
+  document.addEventListener('open-dossier', (e) => toon(e.detail));
+  document.getElementById('dialoog-instellingen-open').addEventListener('click', () => toon({ naam: 'Bakkerij De Gouden Korst B.V.', status: 'wacht', bedrag: 12480, index: 0 }));
+  dlg.addEventListener('close', () => { if (dlg.returnValue === 'opslaan') melding.succes('Instellingen opgeslagen', form.naam.value); });
+  document.getElementById('instellingen-archiveer').addEventListener('click', async () => {
+    if (await bevestig({ titel: 'Dossier archiveren?', tekst: 'Medewerkers zien dit dossier niet meer, maar niets gaat verloren.', bevestigtekst: 'Dossier archiveren' })) { dlg.close('gearchiveerd'); melding.succes('Dossier gearchiveerd'); }
+  });
+  document.getElementById('instellingen-verwijder').addEventListener('click', async () => {
+    if (await bevestig({ titel: 'Dossier verwijderen?', tekst: 'Alle documenten in dit dossier worden ook verwijderd. Dit kan niet ongedaan worden gemaakt.', bevestigtekst: 'Dossier verwijderen', gevaarlijk: true })) { dlg.close('verwijderd'); melding.succes('Dossier verwijderd'); }
   });
 });
 lucide.createIcons();

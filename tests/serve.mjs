@@ -13,9 +13,11 @@ createServer(async (req, res) => {
     const pad = normalize(decodeURIComponent(new URL(req.url, 'http://x').pathname));
     const bestand = join(root, pad === '/' ? 'index.html' : pad);
     if (!bestand.startsWith(root) || bestand.includes('node_modules')) throw new Error('buiten de map');
+    const inhoud = await readFile(bestand); // eerst lezen, dan pas antwoorden: een ontbrekend bestand moet een 404 geven en geen crash
     res.writeHead(200, { 'content-type': types[extname(bestand)] ?? 'application/octet-stream' });
-    res.end(await readFile(bestand));
+    res.end(inhoud);
   } catch {
-    res.writeHead(404).end('niet gevonden');
+    if (!res.headersSent) res.writeHead(404);
+    res.end('niet gevonden');
   }
 }).listen(poort, '127.0.0.1', () => console.log(`http://127.0.0.1:${poort}`));

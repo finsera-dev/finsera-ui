@@ -42,6 +42,9 @@ Is dit bestand in een ander project opgehaald, lees dan de bestanden uit de `fin
 | Legenda | `fs-legenda` met `fs-reeks-N` per item |
 | Tijdelijke bevestiging (opgeslagen, hersteld) | `melding` uit `toast.js` (`succes`, `info`, `waarschuwing`, `fout`, `ongedaan`, `belofte`); iets dat de gebruiker moet lezen of waar actie op volgt is geen toast maar een blijvende `fs-melding` |
 | Dialoog | Native `<dialog class="fs-dialoog">` met `__kop`, `__inhoud`, `__acties` en `aria-labelledby`; openen met `open()` uit `dialoog.js`. Bevestigen vóór iets onomkeerbaars: `await bevestig({ titel, tekst, bevestigtekst, gevaarlijk: true })`. Knop heet naar de handeling, nooit "OK" |
+| Instellingen in een grote dialoog (klik op een item, pas aan) | `<dialog class="fs-dialoog fs-dialoog--groot" data-bewaak-wijzigingen>` met één `<form method="dialog">`, `__kop` (titel + `__sub`), `__tabs` met `fs-tabs`, `__inhoud` met `role="tabpanel"`-panelen en `__acties`. Tabknoppen krijgen `type="button"`. Schakelaars: `fs-schakelaar`. Zie `index.html` voor het compleet voorbeeld |
+| Tabs | `fs-tabs` met `role="tablist"`, `role="tab"` (`aria-controls`, `aria-selected`) en `role="tabpanel"`; gedrag via `maakTabs()` uit `tabs.js` |
+| Naam in een tabelrij die een dialoog opent | `<button type="button" class="fs-koppeling" aria-haspopup="dialog">` |
 | Lege of laadstaat | `fs-leeg`, `fs-skelet` |
 | Bron en peildatum | `fs-herkomst` onder elk cijfer of elke grafiek |
 | Icoon | Lucide (`data-lucide`), geen andere iconenset |

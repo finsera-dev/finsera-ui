@@ -16,7 +16,8 @@
     "toast.js",
     "toast.css",
     "stylelint-config.mjs",
-    "dialoog.js"
+    "dialoog.js",
+    "tabs.js"
   ],
   "exports": {
     "./tokens.css": "./tokens.css",
@@ -27,7 +28,8 @@
     "./toast.js": "./toast.js",
     "./toast.css": "./toast.css",
     "./stylelint-config": "./stylelint-config.mjs",
-    "./dialoog.js": "./dialoog.js"
+    "./dialoog.js": "./dialoog.js",
+    "./tabs.js": "./tabs.js"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.14.0",

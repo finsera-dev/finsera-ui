@@ -260,3 +260,34 @@ html:has(.fs-dialoog[open]) { overflow: hidden; scrollbar-gutter: stable; }
 .fs-dialoog[open] { transform: none; }
 @starting-style { .fs-dialoog[open], .fs-dialoog[open]::backdrop { opacity: 0; } .fs-dialoog[open] { transform: translateY(8px); } }
 @media (prefers-reduced-motion: reduce) { .fs-dialoog, .fs-dialoog::backdrop { transition: none; } }
+
+/* ---------- Grote dialoog met tabs (instellingen) ---------- */
+/* Vaste hoogte, zodat de dialoog niet verspringt als je van tab wisselt; de inhoud scrolt, kop, tabs en acties blijven staan. */
+.fs-dialoog--groot { width: min(960px, calc(100vw - 32px)); height: min(680px, calc(100dvh - 32px)); }
+.fs-dialoog__sub { margin: 2px 0 0; font-size: var(--fs-tekst-m); font-weight: 600; color: var(--fs-tekst-zacht); }
+.fs-dialoog__kop { padding-bottom: var(--fs-r3); }
+.fs-dialoog__tabs { padding: 0 var(--fs-r6); }
+.fs-dialoog__tabs .fs-tabs { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+.fs-dialoog--groot .fs-dialoog__inhoud { flex: 1 1 auto; min-height: 0; padding-top: var(--fs-r5); }
+.fs-dialoog--groot .fs-dialoog__acties { border-top: 1px solid var(--fs-lijn); padding-top: var(--fs-r4); }
+.fs-dialoog__acties--spreid { justify-content: space-between; }
+.fs-dialoog__acties .fs-groep { display: flex; gap: var(--fs-r2); flex-wrap: wrap; }
+
+/* Tabs: algemeen, ook buiten een dialoog */
+.fs-tabs button { white-space: nowrap; }
+[role='tabpanel']:focus-visible { outline: 2px solid var(--fs-accent); outline-offset: 4px; border-radius: var(--fs-hoek-s); }
+[role='tabpanel'][hidden] { display: none; }
+
+/* Schakelaar (aan/uit): <label class="fs-schakelaar"><input type="checkbox" role="switch"> Tekst</label> */
+.fs-schakelaar { display: flex; align-items: center; justify-content: space-between; gap: var(--fs-r4); font-size: var(--fs-tekst-m); font-weight: 600; color: var(--fs-tekst-2); cursor: pointer; }
+.fs-schakelaar small { display: block; font-weight: 500; font-size: var(--fs-tekst-s); color: var(--fs-tekst-zacht); }
+.fs-schakelaar input { appearance: none; flex: none; position: relative; width: 42px; height: 24px; margin: 0; border-radius: var(--fs-hoek-rond); background: var(--fs-tekst-zacht); cursor: pointer; transition: background-color var(--fs-duur) var(--fs-ease); }
+.fs-schakelaar input::after { content: ''; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: var(--fs-vlak); transition: transform var(--fs-duur) var(--fs-ease); }
+.fs-schakelaar input:checked { background: var(--fs-accent); }
+.fs-schakelaar input:checked::after { transform: translateX(18px); }
+.fs-schakelaar input:focus-visible { outline: 2px solid var(--fs-accent); outline-offset: 2px; }
+.fs-schakelaar input:disabled { opacity: 0.55; cursor: not-allowed; }
+
+/* Knop die eruitziet als tekst, bijvoorbeeld de naam in een tabelrij die een dialoog opent */
+.fs-koppeling { padding: 0; border: 0; background: none; font: inherit; font-weight: 700; color: inherit; text-align: left; cursor: pointer; text-underline-offset: 3px; }
+.fs-koppeling:hover { color: var(--fs-accent-inkt); text-decoration: underline; }

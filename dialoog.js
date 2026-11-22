@@ -1,7 +1,8 @@
 /*
  * Finsera UI — dialogen op de native <dialog>. Geen dependency, werkt in kale HTML, Preact en React.
  * De browser regelt focus vangen, Esc, een inerte achtergrond en het tonen bovenop de pagina;
- * wij voegen toe: sluiten bij een klik op de achtergrond, [data-sluit]-knoppen en `bevestig()`.
+ * wij voegen toe: sluiten bij een klik op de achtergrond, [data-sluit]-knoppen, tabs, bewaking van
+ * niet-opgeslagen wijzigingen en `bevestig()`.
  *
  *   <dialog class="fs-dialoog" id="nieuw" aria-labelledby="nieuw-titel"> … </dialog>
  *
@@ -12,31 +13,90 @@
  *   if (await bevestig({ titel: 'Dossier verwijderen?', tekst: 'Dit kan niet ongedaan worden gemaakt.',
  *                        bevestigtekst: 'Dossier verwijderen', gevaarlijk: true })) { … }
  *
+ * Instellingen met tabs (groot): zie `fs-dialoog--groot` in index.html.
+ *   - Een `[role=tablist]` in de dialoog wordt automatisch tabs (zie tabs.js); bij elke `open()` begint de dialoog op de eerste tab.
+ *   - `data-bewaak-wijzigingen` op de <dialog>: sluiten (Esc, klik ernaast, Annuleren, kruisje) vraagt eerst of wijzigingen
+ *     weggegooid mogen worden, als er iets is veranderd sinds `open()`. Opslaan (submit) sluit altijd direct.
+ *   - Een ongeldig verplicht veld in een verborgen tab schakelt naar die tab, zodat de melding zichtbaar is.
+ *
  * Regels: elke dialoog heeft een titel (aria-labelledby). Onomkeerbare acties gebruiken `bevestig({ gevaarlijk: true })`:
  * daar krijgt de veilige keuze (Annuleren) de focus en heet de knop naar de handeling, nooit "OK".
  */
+import { maakTabs } from './tabs.js';
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 let teller = 0;
+const begin = new WeakMap();   // dialoog -> { toestand van het formulier bij openen, tabs }
+const koppelingen = new WeakMap();
 
-export const open = (dialoog) => { if (!dialoog.open) dialoog.showModal(); };
+const momentopname = (dialoog) => {
+  const form = dialoog.querySelector('form');
+  return form ? new URLSearchParams(new FormData(form)).toString() : '';
+};
+
+/** Opent de dialoog. Onthoudt de begintoestand (voor de wijzigingsbewaking) en gaat naar de eerste tab. */
+export function open(dialoog) {
+  if (dialoog.open) return;
+  koppelingen.get(dialoog)?.tabs?.kies(0);
+  begin.set(dialoog, momentopname(dialoog));
+  dialoog.showModal();
+}
 export const sluit = (dialoog, waarde) => dialoog.close(waarde);
+/** True als het formulier in de dialoog anders is dan bij `open()`. */
+export const isGewijzigd = (dialoog) => begin.has(dialoog) && begin.get(dialoog) !== momentopname(dialoog);
 
 /**
  * Maakt een bestaande dialoog af: klik op de achtergrond sluit (alleen als de klik ook daar begon, zodat tekst
- * selecteren en per ongeluk loslaten buiten het venster niets sluit) en elke [data-sluit] sluit.
+ * selecteren en per ongeluk loslaten buiten het venster niets sluit), elke [data-sluit] sluit, tabs werken,
+ * en met `data-bewaak-wijzigingen` wordt eerst gevraagd bij niet-opgeslagen wijzigingen.
  * Geeft een functie terug die de koppeling weer opruimt.
  */
 export function koppel(dialoog) {
+  const bewaak = dialoog.hasAttribute('data-bewaak-wijzigingen');
+  const lijst = dialoog.querySelector('[role="tablist"]');
+  const form = dialoog.querySelector('form');
+  const tabs = lijst ? maakTabs(lijst) : null;
   let begonOpAchtergrond = false;
+  let vraagtNog = false;
+
+  async function probeerTeSluiten(reden) {
+    if (!bewaak || !isGewijzigd(dialoog)) return dialoog.close(reden);
+    if (vraagtNog) return;
+    vraagtNog = true;
+    const weggooien = await bevestig({
+      titel: 'Wijzigingen weggooien?',
+      tekst: 'Je hebt wijzigingen die nog niet zijn opgeslagen. Als je nu sluit, gaan ze verloren.',
+      bevestigtekst: 'Wijzigingen weggooien',
+      annuleertekst: 'Terug naar instellingen',
+      gevaarlijk: true,
+    });
+    vraagtNog = false;
+    if (weggooien) dialoog.close(reden);
+  }
+
   const neer = (e) => { begonOpAchtergrond = e.target === dialoog; };
   const klik = (e) => {
-    if (e.target === dialoog && begonOpAchtergrond) dialoog.close('achtergrond');
-    else if (e.target.closest?.('[data-sluit]')) dialoog.close(e.target.closest('[data-sluit]').dataset.sluit || '');
+    const sluitKnop = e.target.closest?.('[data-sluit]');
+    if (e.target === dialoog && begonOpAchtergrond) probeerTeSluiten('achtergrond');
+    else if (sluitKnop) probeerTeSluiten(sluitKnop.dataset.sluit || '');
   };
+  const annuleer = (e) => { if (bewaak && isGewijzigd(dialoog)) { e.preventDefault(); probeerTeSluiten('esc'); } };
+  const ongeldig = (e) => { tabs?.kiesVoorElement(e.target); };
+
   dialoog.addEventListener('pointerdown', neer);
   dialoog.addEventListener('click', klik);
-  return () => { dialoog.removeEventListener('pointerdown', neer); dialoog.removeEventListener('click', klik); };
+  dialoog.addEventListener('cancel', annuleer);
+  form?.addEventListener('invalid', ongeldig, true);
+  koppelingen.set(dialoog, { tabs });
+
+  return () => {
+    dialoog.removeEventListener('pointerdown', neer);
+    dialoog.removeEventListener('click', klik);
+    dialoog.removeEventListener('cancel', annuleer);
+    form?.removeEventListener('invalid', ongeldig, true);
+    tabs?.dispose();
+    koppelingen.delete(dialoog);
+  };
 }
 
 /**
