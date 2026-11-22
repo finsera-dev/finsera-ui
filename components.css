@@ -297,12 +297,12 @@ html:has(.fs-dialoog[open]) { overflow: hidden; scrollbar-gutter: stable; }
 /* ---------- Zijpaneel (native <dialog>: niet-modaal op breed, modaal op smal) ---------- */
 /* Voor snel kijken en kleine aanpassingen die direct gelden, met behoud van de lijst ernaast. */
 .fs-zijpaneel {
-  position: fixed; inset: 0 0 0 auto; z-index: 40; margin: 0; width: min(420px, 100vw); max-width: none; height: 100dvh; max-height: none;
+  --fs-paneel-breedte: 420px; position: fixed; inset: 0 0 0 auto; z-index: 40; margin: 0; width: min(var(--fs-paneel-breedte), 100vw); max-width: none; height: 100dvh; max-height: none;
   padding: 0; border: 0; border-radius: var(--fs-hoek-xl) 0 0 var(--fs-hoek-xl); background: var(--fs-vlak); color: var(--fs-tekst);
   box-shadow: var(--fs-schaduw); font: inherit; overflow: hidden;
 }
 .fs-zijpaneel[open] { display: flex; flex-direction: column; }
-.fs-zijpaneel--breed { width: min(560px, 100vw); }
+.fs-zijpaneel--breed { --fs-paneel-breedte: 560px; }
 .fs-zijpaneel::backdrop { background: var(--fs-sluier); }
 .fs-zijpaneel__kop { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--fs-r4); padding: var(--fs-r5) var(--fs-r5) var(--fs-r4); border-bottom: 1px solid var(--fs-lijn); }
 .fs-zijpaneel__titel { font-size: var(--fs-kop-s); font-weight: 800; }
@@ -319,6 +319,15 @@ html:has(.fs-zijpaneel:modal) { overflow: hidden; scrollbar-gutter: stable; }
 .fs-zijpaneel[open] { transform: none; }
 @starting-style { .fs-zijpaneel[open], .fs-zijpaneel[open]::backdrop { opacity: 0; } .fs-zijpaneel[open] { transform: translateX(24px); } }
 @media (prefers-reduced-motion: reduce) { .fs-zijpaneel, .fs-zijpaneel::backdrop { transition: none; } }
+
+/* Niet-modaal (breed scherm, vanaf 1200 px): de pagina schuift op, zodat het paneel niets bedekt en alle kolommen bereikbaar blijven.
+   Wil je dat het paneel er juist overheen ligt, geef het dan `fs-zijpaneel--over`. */
+@media (min-width: 1200px) {
+  html:has(.fs-zijpaneel[open]:not(:modal):not(.fs-zijpaneel--over)) { padding-inline-end: 420px; }
+  html:has(.fs-zijpaneel--breed[open]:not(:modal):not(.fs-zijpaneel--over)) { padding-inline-end: 560px; }
+}
+html { transition: padding-inline-end var(--fs-duur) var(--fs-ease); }
+@media (prefers-reduced-motion: reduce) { html { transition: none; } }
 
 /* Kenmerken: label en waarde onder elkaar in een rooster (<dl>) */
 .fs-kenmerken { display: grid; grid-template-columns: max-content 1fr; gap: var(--fs-r2) var(--fs-r5); margin: 0; font-size: var(--fs-tekst-m); align-items: center; }

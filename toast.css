@@ -54,7 +54,8 @@ html body [data-sonner-part='action-button'] {
   color: var(--fs-accent-tekst);
 }
 
-/* Staat er een niet-modaal zijpaneel open, dan schuiven toasts ernaast in plaats van eroverheen. */
-@media (min-width: 900px) {
-  html:has(.fs-zijpaneel[open]:not(:modal)) body [data-sonner-toast][data-x-position='right'] { --x-offset: calc(min(420px, 100vw) + 16px); }
+/* Staat er een niet-modaal zijpaneel open (vanaf 1200 px), dan staan toasts ernaast in plaats van erover. */
+@media (min-width: 1200px) {
+  html:has(.fs-zijpaneel[open]:not(:modal)) body [data-sonner-toast][data-x-position='right'] { --x-offset: calc(420px + 16px); }
+  html:has(.fs-zijpaneel--breed[open]:not(:modal)) body [data-sonner-toast][data-x-position='right'] { --x-offset: calc(560px + 16px); }
 }

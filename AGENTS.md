@@ -110,7 +110,7 @@ De dialoog en het paneel zijn gewone DOM (native `<dialog>`) met helpers in `dia
 - Velden in een dialoog met `data-bewaak-wijzigingen` hebben een `name`: de bewaking vergelijkt benoemde velden.
 - Tabknoppen hebben `type="button"`. `aria-selected` en `hidden` beheert `tabs.js`; maak daar geen eigen React-toestand voor.
 - Maten: klein = `fs-dialoog`, ruimer = `fs-dialoog fs-dialoog--breed`, instellingen met tabs = `fs-dialoog fs-dialoog--groot`. Verzin geen eigen classes in plaats daarvan.
-- Zet het paneel net zo op: portal, `koppelPaneel(el)` eenmalig, `openPaneel(el, { focusTerug })` bij elke selectie.
+- Zet het paneel net zo op: portal, `koppelPaneel(el)` eenmalig, `openPaneel(el, { focusTerug })` bij elke selectie. Vanaf 1200 px schuift de pagina op (de inhoud moet dus mee kunnen krimpen: geef brede tabellen een `fs-tabelrand` zodat ze horizontaal scrollen en gebruik geen vaste breedtes); onder 1200 px is het paneel modaal.
 
 ## Ziet het er raar uit?
 

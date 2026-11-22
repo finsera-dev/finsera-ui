@@ -320,6 +320,14 @@ test('paneel: niet-modaal op breed scherm, pagina blijft bruikbaar, wisselt van 
   await expect(page.locator('#paneel-titel')).toHaveText('Studio Noord V.O.F.');
   await expect(page.locator('[aria-current="true"]')).toHaveCount(1);
 
+  // De pagina schuift op: het paneel bedekt niets, ook niet de rechterkolommen van de tabel.
+  const paneelDoos = await paneel.boundingBox();
+  const inhoud = await page.locator('main.fs-inhoud').boundingBox();
+  expect(inhoud.x + inhoud.width, 'het paneel bedekt de inhoud').toBeLessThanOrEqual(paneelDoos.x + 1);
+  const tabelrand = page.locator('#dossiers .fs-tabelrand');
+  const rand = await tabelrand.boundingBox();
+  expect(rand.x + rand.width, 'de tabel steekt onder het paneel').toBeLessThanOrEqual(paneelDoos.x + 1);
+
   // De pagina erachter blijft bedienbaar en wordt niet vergrendeld.
   await page.fill('#zoek', 'Bouw');
   await expect(page.locator('#zoek')).toHaveValue('Bouw');
@@ -339,6 +347,8 @@ test('paneel: niet-modaal op breed scherm, pagina blijft bruikbaar, wisselt van 
   await expect(paneel).toHaveJSProperty('open', false);
   await expect(page.locator('[data-dossier="0"]')).toBeFocused();
   await expect(page.locator('[aria-current="true"]')).toHaveCount(0);
+  // Na sluiten krijgt de pagina haar ruimte terug.
+  await expect.poll(() => page.evaluate(() => getComputedStyle(document.documentElement).paddingRight)).toBe('0px');
 
   // Kruisje sluit ook.
   await page.click('[data-dossier="3"]');
@@ -384,6 +394,15 @@ test('paneel: "Alle instellingen…" sluit het paneel en opent de grote dialoog 
   await expect(dlg.getByRole('heading', { name: 'Studio Noord V.O.F.' })).toBeVisible();
   await page.keyboard.press('Escape');
   await expect(dlg).toHaveJSProperty('open', false);
+});
+
+test('paneel: onder 1200 px is het modaal (grens)', async ({ page }) => {
+  const smal = await openPaneel(page, 1, { width: 1100, height: 800 });
+  expect(await smal.evaluate((el) => el.matches(':modal'))).toBe(true);
+  await page.keyboard.press('Escape');
+  await expect(smal).toHaveJSProperty('open', false);
+  const breed = await openPaneel(page, 1, { width: 1200, height: 800 });
+  expect(await breed.evaluate((el) => el.matches(':modal'))).toBe(false);
 });
 
 test('paneel: modaal op een smal scherm (achtergrond sluit, pagina vergrendeld)', async ({ page }) => {

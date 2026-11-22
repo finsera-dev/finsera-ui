@@ -80,7 +80,7 @@ Elk niveau heeft één duidelijke knop naar het volgende. Dubbel werk voorkom je
 
 ### Gedrag dat bij elk middel hoort
 
-- **Zijpaneel:** niet-modaal op een breed scherm (de pagina blijft bruikbaar), modaal als scherm over de volle breedte op een smal scherm. Een ander item aanklikken wisselt de inhoud. Esc sluit en de focus keert terug op het item. Wijzigingen geven feedback via een toast, bij voorkeur met "Ongedaan maken".
+- **Zijpaneel:** vanaf 1200 px breed niet-modaal: de pagina schuift op en blijft bruikbaar, zodat het paneel niets bedekt (ook niet de rechterkolommen van een tabel). Onder 1200 px is het modaal, op een telefoon over de volle breedte. Wil je dat het paneel er juist overheen ligt, geef het `fs-zijpaneel--over`. Een ander item aanklikken wisselt de inhoud. Esc sluit en de focus keert terug op het item. Wijzigingen geven feedback via een toast, bij voorkeur met "Ongedaan maken".
 - **Dialoog:** altijd modaal, altijd een titel, Esc en Annuleren sluiten. De primaire knop staat rechts en heet naar de handeling. Bij een formulier met wijzigingen vraagt sluiten eerst om bevestiging.
 - **Bevestiging van iets onomkeerbaars:** de veilige keuze krijgt de focus, de knop heet naar de handeling ("Dossier verwijderen"), nooit "OK".
 
@@ -90,7 +90,7 @@ Dit is wat je in de browser moet zien. Wijkt het af, dan komt de opmaak niet aan
 
 - **Dialoog:** afgeronde hoeken (22 px), geen rand, een zachte schaduw en een gedimde pagina erachter. Boven de titel in vet, rechts op dezelfde regel een kruisje. Daaronder de inhoud met royale marge (24 px) die scrolt als het veel is. Onderaan een scheidingslijn en de knoppen rechts: Annuleren links van de primaire knop. Een grote dialoog heeft een vaste hoogte (maximaal 680 px), zodat hij niet verspringt bij het wisselen van tab.
 - **Tabs in een dialoog:** direct onder de kop, met dezelfde zijmarge als de inhoud, een dunne lijn eronder en een accentkleurige streep onder de gekozen tab.
-- **Zijpaneel:** vast aan de rechterrand, over de volle hoogte, met afgeronde linkerhoeken. Kop met titel en kruisje, daaronder secties met een klein label in hoofdletters, onderaan één knop naar de volgende stap.
+- **Zijpaneel:** vast aan de rechterrand, over de volle hoogte, met afgeronde linkerhoeken. De pagina ernaast is smaller geworden en verspringt niet naar achteren. Kop met titel en kruisje, daaronder secties met een klein label in hoofdletters, onderaan één knop naar de volgende stap.
 - **Schakelaar:** een glijder (pil met een bolletje), geen aanvinkvakje. Kleur: accent als aan, grijs als uit.
 - **Toast:** rechtsonder, een kleur per soort (succes, info, waarschuwing, fout), met tekst; naast een open paneel in plaats van erover.
 - **Veld:** witte achtergrond, afgeronde rand, label erboven in een klein grijs vet lettertype.

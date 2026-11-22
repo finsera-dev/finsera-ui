@@ -2,9 +2,9 @@
  * Finsera UI — zijpaneel op de native <dialog>. Geen dependency, werkt in kale HTML, Preact en React.
  *
  * Een zijpaneel is voor snel kijken en kleine aanpassingen die direct gelden, terwijl de lijst ernaast bruikbaar blijft:
- *   - Breed scherm (≥ 900 px): NIET-modaal (`show()`). De pagina blijft bedienbaar; klik je een ander item aan,
- *     dan wisselt de inhoud van het paneel. Geen achtergrond, geen scrollvergrendeling.
- *   - Smal scherm: MODAAL (`showModal()`) als paneel over de volle breedte, met achtergrond en focus vangen.
+ *   - Breed scherm (≥ 1200 px): NIET-modaal (`show()`). De pagina schuift op (zie `components.css`) en blijft bedienbaar;
+ *     klik je een ander item aan, dan wisselt de inhoud van het paneel. Geen achtergrond, geen scrollvergrendeling.
+ *   - Onder 1200 px: MODAAL (`showModal()`), op een telefoon over de volle breedte, met achtergrond en focus vangen.
  *
  *   <dialog class="fs-zijpaneel" id="paneel" aria-labelledby="paneel-titel">
  *     <div class="fs-zijpaneel__kop"><h2 class="fs-zijpaneel__titel" id="paneel-titel" tabindex="-1">…</h2>
@@ -26,7 +26,7 @@
 
 import { controleerStijl } from './dialoog.js';
 
-const smal = globalThis.matchMedia ? matchMedia('(max-width: 899px)') : { matches: false };
+const smal = globalThis.matchMedia ? matchMedia('(max-width: 1199px)') : { matches: false };
 const terug = new WeakMap();   // paneel -> waar de focus naartoe moet bij sluiten
 const opruim = new WeakMap();
 
