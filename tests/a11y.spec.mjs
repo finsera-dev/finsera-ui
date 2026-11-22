@@ -505,3 +505,19 @@ test('dialoog en paneel: geen stijlmelding als alles goed staat', async ({ page 
   await page.waitForTimeout(300);
   expect(stijlFouten(fouten), 'onterechte melding').toEqual([]);
 });
+
+/* ---------- Focus op de titel is onzichtbaar, op knoppen en velden wel ---------- */
+test('paneel: de titel krijgt focus zonder zichtbare rand; knoppen houden hun focusring', async ({ page }) => {
+  await page.goto('/index.html');
+  await page.waitForSelector('#dossiers table');
+  await page.focus('[data-dossier="1"]');
+  await page.keyboard.press('Enter'); // met het toetsenbord openen, dan is :focus-visible het strengst
+  await expect(page.locator('#paneel-titel')).toBeFocused();
+  expect(await page.locator('#paneel-titel').evaluate((el) => getComputedStyle(el).outlineStyle)).toBe('none');
+
+  // Een echte knop in het paneel heeft nog wel zijn focusring.
+  await page.getByRole('button', { name: 'Paneel sluiten' }).focus();
+  await page.keyboard.press('Shift+Tab');
+  await page.keyboard.press('Tab');
+  expect(await page.getByRole('button', { name: 'Paneel sluiten' }).evaluate((el) => getComputedStyle(el).outlineStyle)).not.toBe('none');
+});

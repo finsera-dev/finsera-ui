@@ -329,6 +329,10 @@ html:has(.fs-zijpaneel:modal) { overflow: hidden; scrollbar-gutter: stable; }
 html { transition: padding-inline-end var(--fs-duur) var(--fs-ease); }
 @media (prefers-reduced-motion: reduce) { html { transition: none; } }
 
+/* De titel krijgt programmatisch focus bij het openen (zodat schermlezers de nieuwe inhoud horen), maar is geen bedienbaar element:
+   daar hoort geen zichtbare focusrand bij. Knoppen, velden en links houden hun focusring. */
+.fs-zijpaneel__titel:focus, .fs-zijpaneel__titel:focus-visible, .fs-dialoog__titel:focus, .fs-dialoog__titel:focus-visible { outline: none; }
+
 /* Kenmerken: label en waarde onder elkaar in een rooster (<dl>) */
 .fs-kenmerken { display: grid; grid-template-columns: max-content 1fr; gap: var(--fs-r2) var(--fs-r5); margin: 0; font-size: var(--fs-tekst-m); align-items: center; }
 .fs-kenmerken dt { font-weight: 600; color: var(--fs-tekst-zacht); }
