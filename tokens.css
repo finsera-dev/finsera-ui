@@ -76,7 +76,7 @@
 
   /* Breedtes */
   --fs-zijbalk: 232px;
-  --fs-pagina-max: 1360px;
+  --fs-pagina-max: 1760px;       /* maximale breedte van de inhoud naast de zijbalk; per project te overschrijven */
 
   color-scheme: light dark;
 }

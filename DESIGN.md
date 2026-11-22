@@ -29,6 +29,8 @@ Een dashboard is een werkplek voor een accountant of kantoormedewerker, geen eta
 4. Hoofdgrafiek (2/3) naast een rangorde of lijst (1/3).
 5. Detailtabel onderaan.
 
+De inhoud naast de zijbalk groeit mee met het scherm tot `--fs-pagina-max` (1760 px) en blijft daarna staan. Een project dat meer of minder wil, overschrijft dat in één regel: `:root { --fs-pagina-max: 2000px; }`.
+
 Een scherm heeft één primaire knop. Verwijderen en andere onomkeerbare acties vragen altijd om bevestiging. Of een detail in een paneel, dialoog of op een eigen pagina hoort, staat in het volgende hoofdstuk.
 
 ## Toast, zijpaneel, dialoog of pagina: wat gebruik je wanneer
