@@ -84,6 +84,17 @@ Elk niveau heeft één duidelijke knop naar het volgende. Dubbel werk voorkom je
 - **Dialoog:** altijd modaal, altijd een titel, Esc en Annuleren sluiten. De primaire knop staat rechts en heet naar de handeling. Bij een formulier met wijzigingen vraagt sluiten eerst om bevestiging.
 - **Bevestiging van iets onomkeerbaars:** de veilige keuze krijgt de focus, de knop heet naar de handeling ("Dossier verwijderen"), nooit "OK".
 
+### Zo hoort het eruit te zien
+
+Dit is wat je in de browser moet zien. Wijkt het af, dan komt de opmaak niet aan (zie "Ziet het er raar uit?" in `AGENTS.md`); dat is geen reden voor eigen CSS.
+
+- **Dialoog:** afgeronde hoeken (22 px), geen rand, een zachte schaduw en een gedimde pagina erachter. Boven de titel in vet, rechts op dezelfde regel een kruisje. Daaronder de inhoud met royale marge (24 px) die scrolt als het veel is. Onderaan een scheidingslijn en de knoppen rechts: Annuleren links van de primaire knop. Een grote dialoog heeft een vaste hoogte (maximaal 680 px), zodat hij niet verspringt bij het wisselen van tab.
+- **Tabs in een dialoog:** direct onder de kop, met dezelfde zijmarge als de inhoud, een dunne lijn eronder en een accentkleurige streep onder de gekozen tab.
+- **Zijpaneel:** vast aan de rechterrand, over de volle hoogte, met afgeronde linkerhoeken. Kop met titel en kruisje, daaronder secties met een klein label in hoofdletters, onderaan één knop naar de volgende stap.
+- **Schakelaar:** een glijder (pil met een bolletje), geen aanvinkvakje. Kleur: accent als aan, grijs als uit.
+- **Toast:** rechtsonder, een kleur per soort (succes, info, waarschuwing, fout), met tekst; naast een open paneel in plaats van erover.
+- **Veld:** witte achtergrond, afgeronde rand, label erboven in een klein grijs vet lettertype.
+
 ## Adressen en navigatie
 
 Een dashboard is pas een werkplek als je er een collega naartoe kunt sturen. Elk scherm heeft daarom een eigen adres dat je kunt kopiëren, in een nieuw tabblad kunt openen en kunt delen, en terug, vooruit en vernieuwen blijven op dezelfde plek. Alle apps (Kantoorportaal, Boekassistent en wat er nog komt) volgen dezelfde afspraken, zodat een link uit de ene app in de andere werkt. Hoe de app het bouwt (een eigen router, een hook, een component) is aan de app; de afspraken zijn hier, het kleine pure hulpbestand is `adres.js`.

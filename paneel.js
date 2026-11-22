@@ -24,6 +24,8 @@
  * Opslaan-knop. Heb je Opslaan/Annuleren of meer dan een paar velden nodig, gebruik dan een dialoog (zie DESIGN.md).
  */
 
+import { controleerStijl } from './dialoog.js';
+
 const smal = globalThis.matchMedia ? matchMedia('(max-width: 899px)') : { matches: false };
 const terug = new WeakMap();   // paneel -> waar de focus naartoe moet bij sluiten
 const opruim = new WeakMap();
@@ -37,6 +39,7 @@ export function openPaneel(paneel, { focusTerug } = {}) {
   // Wisselde het scherm van breed naar smal (of andersom) terwijl het paneel open stond: opnieuw openen in de juiste modus.
   if (paneel.open && paneel.matches(':modal') !== modaal) paneel.close('modus');
   if (!paneel.open) (modaal ? paneel.showModal() : paneel.show());
+  controleerStijl(paneel, 'fs-zijpaneel');
   const titel = document.getElementById(paneel.getAttribute('aria-labelledby'));
   (titel ?? paneel).focus({ preventScroll: true });
 }

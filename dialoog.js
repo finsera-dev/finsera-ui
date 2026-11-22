@@ -34,12 +34,32 @@ const momentopname = (dialoog) => {
   return form ? new URLSearchParams(new FormData(form)).toString() : '';
 };
 
+
+/**
+ * Zelfcontrole: een `fs-dialoog` zonder `components.css` (of met een verouderde versie ervan) valt terug op de standaardstijl
+ * van de browser: vierkant, met een zwart-wit randje, en kop, tabs en knoppen staan onder elkaar. Dat is geen markupfout maar
+ * een opmaak die niet aankomt. We melden het één keer duidelijk in de console in plaats van stil lelijk te zijn.
+ */
+let stijlGemeld = false;
+export function controleerStijl(el, klasse = 'fs-dialoog') {
+  if (stijlGemeld || !el.classList.contains(klasse)) return;
+  if (parseFloat(getComputedStyle(el).borderTopWidth) === 0) return;   // opgemaakt: onze regels zetten de rand op 0
+  stijlGemeld = true;
+  console.error(
+    `finsera-ui: "${klasse}" is niet opgemaakt (de browser gebruikt zijn standaardstijl). ` +
+    'Controleer 1) dat `finsera-ui/tokens.css` en daarna `finsera-ui/components.css` in de pagina geladen zijn, ' +
+    '2) dat `finsera-ui` actueel is (`npm update finsera-ui`; zoek in `node_modules/finsera-ui/components.css` naar `' + klasse + '`), ' +
+    '3) dat de dev-server en de cache ververst zijn (bijvoorbeeld `rm -rf .next` en hard herladen). Zie AGENTS.md, "Ziet het er raar uit?".'
+  );
+}
+
 /** Opent de dialoog. Onthoudt de begintoestand (voor de wijzigingsbewaking) en gaat naar de eerste tab. */
 export function open(dialoog) {
   if (dialoog.open) return;
   koppelingen.get(dialoog)?.tabs?.kies(0);
   begin.set(dialoog, momentopname(dialoog));
   dialoog.showModal();
+  controleerStijl(dialoog);
 }
 export const sluit = (dialoog, waarde) => dialoog.close(waarde);
 /** True als het formulier in de dialoog anders is dan bij `open()`. */
@@ -122,5 +142,6 @@ export function bevestig({ titel, tekst = '', bevestigtekst = 'Bevestigen', annu
   return new Promise((klaar) => {
     dialoog.addEventListener('close', () => { opruimen(); const ja = dialoog.returnValue === 'ja'; dialoog.remove(); klaar(ja); }, { once: true });
     dialoog.showModal();
+    controleerStijl(dialoog);
   });
 }

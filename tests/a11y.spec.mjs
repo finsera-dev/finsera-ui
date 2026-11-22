@@ -436,3 +436,53 @@ test('navigatie: items zijn links met href, precies één is de huidige pagina',
   await expect(page.getByRole('link', { name: 'Status' })).toHaveAttribute('aria-current', 'page');
   await expect(page.locator('.fs-nav[aria-current="page"]')).toHaveCount(1);
 });
+
+/* ---------- Zelfcontrole: een dialoog zonder opmaak meldt zichzelf ---------- */
+const stijlFouten = (fouten) => fouten.filter((t) => t.includes('finsera-ui') && t.includes('niet opgemaakt'));
+
+test('dialoog: meldt één keer in de console als components.css niet aankomt', async ({ page }) => {
+  const fouten = [];
+  page.on('console', (m) => { if (m.type() === 'error') fouten.push(m.text()); });
+  await page.route('**/components.css', (route) => route.abort()); // de opmaak komt niet aan
+  await page.goto('/index.html');
+  await page.waitForSelector('#dossiers table');
+
+  await page.click('#dialoog-open');
+  await expect(page.locator('#dialoog-nieuw')).toHaveJSProperty('open', true);
+  const melding = stijlFouten(fouten);
+  expect(melding, 'er hoort een duidelijke melding te komen').toHaveLength(1);
+  expect(melding[0]).toContain('components.css');
+  expect(melding[0]).toContain('npm update finsera-ui');
+
+  // Een tweede dialoog geeft niet nog een melding.
+  await page.keyboard.press('Escape');
+  await page.click('#dialoog-verwijder');
+  await page.waitForTimeout(200);
+  expect(stijlFouten(fouten)).toHaveLength(1);
+});
+
+test('zijpaneel: meldt in de console als components.css niet aankomt', async ({ page }) => {
+  const fouten = [];
+  page.on('console', (m) => { if (m.type() === 'error') fouten.push(m.text()); });
+  await page.route('**/components.css', (route) => route.abort());
+  await page.goto('/index.html');
+  await page.waitForSelector('#dossiers table');
+  await page.click('[data-dossier="1"]');
+  await expect(page.locator('#paneel-dossier')).toHaveJSProperty('open', true);
+  expect(stijlFouten(fouten).some((t) => t.includes('fs-zijpaneel'))).toBe(true);
+});
+
+test('dialoog en paneel: geen stijlmelding als alles goed staat', async ({ page }) => {
+  const fouten = [];
+  page.on('console', (m) => { if (m.type() === 'error') fouten.push(m.text()); });
+  await page.goto('/index.html');
+  await page.waitForSelector('#dossiers table');
+  await page.click('#dialoog-open');
+  await expect(page.locator('#dialoog-nieuw')).toHaveJSProperty('open', true);
+  await page.keyboard.press('Escape');
+  await page.click('[data-dossier="1"]');
+  await expect(page.locator('#paneel-dossier')).toHaveJSProperty('open', true);
+  await page.click('#dialoog-verwijder');
+  await page.waitForTimeout(300);
+  expect(stijlFouten(fouten), 'onterechte melding').toEqual([]);
+});

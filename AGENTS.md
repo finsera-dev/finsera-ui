@@ -100,6 +100,34 @@ Het waarom staat in `DESIGN.md`. Regels voor elke app met schermen:
 4. Hoofdgrafiek (2/3) naast een rangorde of lijst (1/3)
 5. Detailtabel onderaan
 
+## Dialogen en panelen in React of Preact
+
+De dialoog en het paneel zijn gewone DOM (native `<dialog>`) met helpers in `dialoog.js` en `paneel.js`. In een component werkt dit patroon (zie ook `index.html`):
+
+- Render de `<dialog class="fs-dialoog …">` met een portal naar `document.body`. Zo staat hij nooit in een formulier van de pagina.
+- Eén `<form method="dialog">` om alles heen, met daarin `fs-dialoog__kop`, eventueel `fs-dialoog__tabs`, `fs-dialoog__inhoud` en `fs-dialoog__acties`. Titel links en kruisje (`data-sluit`, `aria-label="Sluiten"`) rechts **in dezelfde `__kop`**, nooit eronder.
+- Na het mounten: `koppel(el)` en dan `open(el)`. Bij unmount: de functie die `koppel` teruggaf aanroepen en `el.close()` als hij nog open is. Reageer op het `close`-event en lees `el.returnValue`.
+- Velden in een dialoog met `data-bewaak-wijzigingen` hebben een `name`: de bewaking vergelijkt benoemde velden.
+- Tabknoppen hebben `type="button"`. `aria-selected` en `hidden` beheert `tabs.js`; maak daar geen eigen React-toestand voor.
+- Maten: klein = `fs-dialoog`, ruimer = `fs-dialoog fs-dialoog--breed`, instellingen met tabs = `fs-dialoog fs-dialoog--groot`. Verzin geen eigen classes in plaats daarvan.
+- Zet het paneel net zo op: portal, `koppelPaneel(el)` eenmalig, `openPaneel(el, { focusTerug })` bij elke selectie.
+
+## Ziet het er raar uit?
+
+Een dialoog, paneel of toast hoort eruit te zien zoals beschreven in `DESIGN.md`, "Zo hoort het eruit te zien". Is dat niet zo, dan is dat bijna nooit de markup maar **opmaak die niet aankomt**. Herken het zo:
+
+- De dialoog is vierkant met een zwart-wit randje, het kruisje staat op een eigen regel onder de titel, tabs en knoppen staan zonder ruimte onder elkaar of links, en schakelaars zijn gewone aanvinkvakjes.
+- De console meldt: `finsera-ui: "fs-dialoog" is niet opgemaakt …` (`dialoog.js` en `paneel.js` melden dit zelf, één keer).
+
+Onderzoek in deze volgorde, en **bouw niets na** voordat je weet waar het aan ligt:
+
+1. Staan `finsera-ui/tokens.css` en daarna `finsera-ui/components.css` in de pagina (`layout.tsx` of `main.tsx`)? Zijn de Network-aanvragen voor beide 200 en bevat de CSS `.fs-dialoog`?
+2. Is `finsera-ui` actueel? Zoek `fs-dialoog` en `fs-schakelaar` in `node_modules/finsera-ui/components.css`. Ontbreken ze, dan is de dependency verouderd: `npm update finsera-ui` en controleer dat `package-lock.json` naar de nieuwste commit wijst.
+3. Staat er een verouderde cache? Stop de dev-server, verwijder de buildmap (`rm -rf .next`, of `node_modules/.vite`), start opnieuw en herlaad hard (Safari: Ontwikkel › Caches legen, ⌥⌘E, dan ⌘R).
+4. Is het alleen in één browser anders, bijvoorbeeld Safari? Reproduceer het dan in die browser (Playwright WebKit) en meld het als probleem in finsera-ui, met de browserversie en een schermafbeelding.
+
+Nooit als oplossing: een eigen `dialog { … }`-regel, een eigen `.modal`, `!important`, CSS uit de library kopiëren naar het project, of de component vervangen door eigen markup. Dan loopt het project uit de pas met alle andere dashboards.
+
 ## Controlelijst voor je klaar bent
 
 - [ ] `npx stylelint "src/**/*.css"` geeft geen fouten (geen hex-waarden, kleurnamen of kleurfuncties; kleur en lettertype alleen via `var(--fs-…)`)
@@ -112,7 +140,8 @@ Het waarom staat in `DESIGN.md`. Regels voor elke app met schermen:
 - [ ] Navigatie is een `<a href>` met `aria-current="page"`, niet een `<button>`; elk scherm heeft een `document.title`; na een routewissel staat de focus op de `h1` en komt er een `role="status"`-bericht
 - [ ] Een dossier-adres bevat alleen het id, en "bestaat niet" en "geen toegang" tonen dezelfde melding
 - [ ] Teksten in het Nederlands, knoppen zijn werkwoorden
-- [ ] Je hebt het scherm daadwerkelijk bekeken in een browser, niet alleen de code geschreven
+- [ ] Je hebt het scherm daadwerkelijk bekeken in een browser, niet alleen de code geschreven; open daarbij elke dialoog, elk paneel en een toast en vergelijk ze met "Zo hoort het eruit te zien" in `DESIGN.md`
+- [ ] Gebruikt de gebruiker Safari of een andere browser dan Chromium? Controleer dan ook daarin, want testen alleen in Chromium mist verschillen
 
 Uitleg waarom deze regels er zijn staat in `DESIGN.md`. Bij twijfel wint de regel die het cijfer sneller leesbaar of betrouwbaarder maakt.
 
