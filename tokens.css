@@ -68,6 +68,7 @@
   /* Diepte: spaarzaam. Kaarten hebben geen schaduw, alleen zwevende lagen */
   --fs-schaduw: 0 12px 28px rgba(21, 23, 28, 0.08);
   --fs-schaduw-klein: 0 1px 2px rgba(21, 23, 28, 0.06);
+  --fs-sluier: rgba(21, 23, 28, 0.45);   /* achtergrond achter een dialoog */
 
   /* Beweging */
   --fs-duur: 0.18s;
@@ -109,6 +110,7 @@
     --fs-as: #7d818a;
     --fs-schaduw: 0 12px 28px rgba(0, 0, 0, 0.4);
     --fs-schaduw-klein: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --fs-sluier: rgba(0, 0, 0, 0.6);
   }
 }
 
@@ -140,4 +142,5 @@
   --fs-as: #7d818a;
   --fs-schaduw: 0 12px 28px rgba(0, 0, 0, 0.4);
   --fs-schaduw-klein: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --fs-sluier: rgba(0, 0, 0, 0.6);
 }

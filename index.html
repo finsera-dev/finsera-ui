@@ -177,6 +177,26 @@
           <button class="fs-knop" data-toast="ongedaan">Met ongedaan maken</button>
           <button class="fs-knop" data-toast="belofte">Bezig → klaar</button>
         </div>
+        <div class="fs-label">Dialogen</div>
+        <div class="fs-rij">
+          <button class="fs-knop" id="dialoog-open">Dossier aanmaken</button>
+          <button class="fs-knop fs-knop--gevaar" id="dialoog-verwijder">Dossier verwijderen</button>
+        </div>
+        <dialog class="fs-dialoog" id="dialoog-nieuw" aria-labelledby="dialoog-nieuw-titel">
+          <form method="dialog">
+            <div class="fs-dialoog__kop">
+              <h2 class="fs-dialoog__titel" id="dialoog-nieuw-titel">Dossier aanmaken</h2>
+              <button type="button" class="fs-knop fs-knop--tekst fs-knop--icoon" data-sluit aria-label="Sluiten"><i data-lucide="x"></i></button>
+            </div>
+            <div class="fs-dialoog__inhoud">
+              <label class="fs-veld">Bedrijfsnaam<input class="fs-invoer" name="naam" required autocomplete="off"></label>
+            </div>
+            <div class="fs-dialoog__acties">
+              <button type="button" class="fs-knop" data-sluit>Annuleren</button>
+              <button class="fs-knop fs-knop--primair" value="opslaan">Dossier aanmaken</button>
+            </div>
+          </form>
+        </dialog>
         <div class="fs-melding"><div><b>Nieuwe versie beschikbaar</b>Het contract is bijgewerkt naar 1.17.0.</div></div>
         <div class="fs-melding fs-melding--succes"><div><b>Opgeslagen</b>De wijziging staat in het dossier.</div></div>
         <div class="fs-melding fs-melding--fout" role="alert"><div><b>Importeren mislukt</b>Het bestand is geen geldig auditfile.</div></div>
@@ -260,6 +280,18 @@ import('./toast.js').then(({ melding }) => {
     belofte: () => melding.belofte(new Promise((ok) => setTimeout(ok, 1800)), { bezig: 'Opslaan…', klaar: 'Opgeslagen', fout: 'Opslaan mislukt' }),
   };
   document.getElementById('toast-demo').addEventListener('click', (e) => { const k = e.target.closest('[data-toast]'); if (k) acties[k.dataset.toast](); });
+});
+
+/* Dialogen: native <dialog> via dialoog.js */
+Promise.all([import('./dialoog.js'), import('./toast.js')]).then(([{ open, koppel, bevestig }, { melding }]) => {
+  const nieuw = document.getElementById('dialoog-nieuw');
+  koppel(nieuw);
+  nieuw.addEventListener('close', () => { if (nieuw.returnValue === 'opslaan') melding.succes('Dossier aangemaakt', nieuw.querySelector('[name=naam]').value); nieuw.querySelector('form').reset(); });
+  document.getElementById('dialoog-open').addEventListener('click', () => open(nieuw));
+  document.getElementById('dialoog-verwijder').addEventListener('click', async () => {
+    const ja = await bevestig({ titel: 'Dossier verwijderen?', tekst: 'Alle documenten in dit dossier worden ook verwijderd. Dit kan niet ongedaan worden gemaakt.', bevestigtekst: 'Dossier verwijderen', gevaarlijk: true });
+    melding[ja ? 'succes' : 'bericht'](ja ? 'Dossier verwijderd' : 'Niets verwijderd');
+  });
 });
 lucide.createIcons();
 /* Grafieken: ECharts via charts.js, kleuren komen uit de tokens */

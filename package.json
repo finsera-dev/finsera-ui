@@ -15,7 +15,8 @@
     "index.html",
     "toast.js",
     "toast.css",
-    "stylelint-config.mjs"
+    "stylelint-config.mjs",
+    "dialoog.js"
   ],
   "exports": {
     "./tokens.css": "./tokens.css",
@@ -25,7 +26,8 @@
     "./tailwind-theme.css": "./tailwind-theme.css",
     "./toast.js": "./toast.js",
     "./toast.css": "./toast.css",
-    "./stylelint-config": "./stylelint-config.mjs"
+    "./stylelint-config": "./stylelint-config.mjs",
+    "./dialoog.js": "./dialoog.js"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.14.0",

@@ -234,3 +234,29 @@
 .fs-leeg p { margin: 0 auto var(--fs-r4); max-width: 38ch; font-size: var(--fs-tekst-m); }
 .fs-skelet { display: block; border-radius: var(--fs-hoek-s); background: linear-gradient(90deg, var(--fs-inzet-2) 25%, var(--fs-inzet) 50%, var(--fs-inzet-2) 75%); background-size: 200% 100%; animation: fs-skelet 1.4s linear infinite; }
 @keyframes fs-skelet { to { background-position: -200% 0; } }
+
+/* ---------- Dialoog (native <dialog>, geopend met showModal()) ---------- */
+.fs-dialoog {
+  width: min(520px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); padding: 0; border: 0; border-radius: var(--fs-hoek-xl);
+  background: var(--fs-vlak); color: var(--fs-tekst); box-shadow: var(--fs-schaduw); font: inherit; overflow: hidden;
+}
+.fs-dialoog[open] { display: flex; flex-direction: column; }
+.fs-dialoog > form { display: flex; flex-direction: column; flex: 1 1 auto; min-height: 0; }
+.fs-dialoog--breed { width: min(760px, calc(100vw - 32px)); }
+.fs-dialoog::backdrop { background: var(--fs-sluier); }
+.fs-dialoog__kop { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--fs-r4); padding: var(--fs-r6) var(--fs-r6) var(--fs-r2); }
+.fs-dialoog__titel { font-size: var(--fs-kop-s); font-weight: 800; }
+.fs-dialoog__inhoud { padding: var(--fs-r2) var(--fs-r6) var(--fs-r4); overflow-y: auto; font-size: var(--fs-tekst-l); color: var(--fs-tekst-2); }
+.fs-dialoog__inhoud > :first-child { margin-top: 0; }
+.fs-dialoog__inhoud > :last-child { margin-bottom: 0; }
+.fs-dialoog__acties { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: var(--fs-r2); padding: var(--fs-r4) var(--fs-r6) var(--fs-r6); }
+.fs-dialoog__acties form { display: contents; }
+/* Geen scroll op de pagina erachter, en geen verspringende pagina door de verdwijnende scrollbalk. */
+html:has(.fs-dialoog[open]) { overflow: hidden; scrollbar-gutter: stable; }
+/* Zachte in- en uitloop; valt weg bij prefers-reduced-motion (zie .fs-basis). */
+.fs-dialoog, .fs-dialoog::backdrop { transition: opacity var(--fs-duur) var(--fs-ease), transform var(--fs-duur) var(--fs-ease), display var(--fs-duur) allow-discrete, overlay var(--fs-duur) allow-discrete; opacity: 0; }
+.fs-dialoog { transform: translateY(8px); }
+.fs-dialoog[open], .fs-dialoog[open]::backdrop { opacity: 1; }
+.fs-dialoog[open] { transform: none; }
+@starting-style { .fs-dialoog[open], .fs-dialoog[open]::backdrop { opacity: 0; } .fs-dialoog[open] { transform: translateY(8px); } }
+@media (prefers-reduced-motion: reduce) { .fs-dialoog, .fs-dialoog::backdrop { transition: none; } }

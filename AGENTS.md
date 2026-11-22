@@ -41,6 +41,7 @@ Is dit bestand in een ander project opgehaald, lees dan de bestanden uit de `fin
 | Grafiek | ECharts via `charts.js` (`maakGrafiek`, `euro`); kleine trendlijn: inline SVG met `fs-grafiek` en `fs-reeks-1…6` |
 | Legenda | `fs-legenda` met `fs-reeks-N` per item |
 | Tijdelijke bevestiging (opgeslagen, hersteld) | `melding` uit `toast.js` (`succes`, `info`, `waarschuwing`, `fout`, `ongedaan`, `belofte`); iets dat de gebruiker moet lezen of waar actie op volgt is geen toast maar een blijvende `fs-melding` |
+| Dialoog | Native `<dialog class="fs-dialoog">` met `__kop`, `__inhoud`, `__acties` en `aria-labelledby`; openen met `open()` uit `dialoog.js`. Bevestigen vóór iets onomkeerbaars: `await bevestig({ titel, tekst, bevestigtekst, gevaarlijk: true })`. Knop heet naar de handeling, nooit "OK" |
 | Lege of laadstaat | `fs-leeg`, `fs-skelet` |
 | Bron en peildatum | `fs-herkomst` onder elk cijfer of elke grafiek |
 | Icoon | Lucide (`data-lucide`), geen andere iconenset |
