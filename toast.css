@@ -1,0 +1,55 @@
+/*
+ * Finsera UI — toast-opmaak. Laad NA `vanilla-sonner/style.css` en `tokens.css`.
+ * vanilla-sonner levert gedrag en toegankelijkheid; het uiterlijk komt hier uit onze tokens.
+ * Alle waarden zijn variabelen van de library zelf, dus licht en donker volgen vanzelf onze tokens
+ * (het thema van de library zelf is daardoor niet meer van belang).
+ */
+html body [data-sonner-toaster] {
+  --width: min(380px, calc(100vw - 32px));
+  --border-radius: var(--fs-hoek-m);
+  --font-family: var(--fs-lettertype);
+}
+
+/* De kleurvariabelen staan bij de library op het toast-element zelf, per thema; hier winnen we daarvan. */
+html body [data-sonner-toast][data-theme] {
+  --normal-bg: var(--fs-vlak);
+  --normal-border: var(--fs-rand);
+  --normal-text: var(--fs-tekst);
+
+  --success-bg: var(--fs-succes-zacht);   --success-border: var(--fs-succes-zacht);   --success-text: var(--fs-succes);
+  --info-bg: var(--fs-info-zacht);        --info-border: var(--fs-info-zacht);        --info-text: var(--fs-info);
+  --warning-bg: var(--fs-waarschuwing-zacht); --warning-border: var(--fs-waarschuwing-zacht); --warning-text: var(--fs-waarschuwing);
+  --error-bg: var(--fs-fout-zacht);       --error-border: var(--fs-fout-zacht);       --error-text: var(--fs-fout);
+
+  --close-button-bg: var(--fs-vlak);
+  --close-button-border: var(--fs-rand);
+  --close-button-text: var(--fs-tekst-zacht);
+}
+
+html body [data-sonner-part='toast'] {
+  font-family: var(--fs-lettertype);
+  font-size: var(--fs-tekst-m);
+  font-weight: 700;
+  box-shadow: var(--fs-schaduw);
+}
+
+/* Titel en omschrijving onder elkaar (de library zet ze standaard naast elkaar). */
+html body [data-sonner-part='content'] {
+  flex: 1 1 auto;
+  min-width: 0;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+html body [data-sonner-description] {
+  font-weight: 600;
+  font-size: var(--fs-tekst-s);
+  opacity: 0.9;
+}
+
+html body [data-sonner-part='action-button'] {
+  border-radius: 10px;
+  font-weight: 800;
+  background: var(--fs-accent);
+  color: var(--fs-accent-tekst);
+}

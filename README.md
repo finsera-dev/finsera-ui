@@ -8,6 +8,7 @@ Gedeelde stijl, ontwerpfilosofie en onderdelen voor alle Finsera-dashboards. Gew
 | `components.css` | Alle onderdelen als `fs-`-klassen |
 | `charts.js` | Koppeling tokens ↔ Apache ECharts (thema, licht/donker, resize, `euro()`) |
 | `tabel.js` | Sorteerbare en filterbare tabel: TanStack Table (8.21.3) met `.fs-tabel`-opmaak |
+| `toast.js`, `toast.css` | Toasts: vanilla-sonner (0.7.0) met onze tokens en Nederlandse helpers (`melding.succes`, `melding.fout`, …) |
 | `tailwind-theme.css` | Tailwind v4-brug: `bg-vlak`, `text-tekst-zacht` enzovoort wijzen naar de tokens |
 | `AGENTS.md` | Instructies voor LLM's die een dashboard bouwen: regels, onderdelenlijst, controlelijst |
 | `DESIGN.md` | Principes en regels: lees dit eerst |
@@ -25,7 +26,7 @@ Kopieer niets: verwijs ernaar.
 <body class="fs-basis">
 ```
 
-In een Vite-app: `import 'finsera-ui/tokens.css'; import 'finsera-ui/components.css';` (na `npm i ../finsera-ui` of via een git-dependency). Iconen: Lucide. Tabellen: `tabel.js` vraagt een importmap of bundler voor `@tanstack/table-core@8.21.3`. Grafieken: ECharts via `charts.js` (zie `index.html` voor een werkend voorbeeld; `charts.js` is een ES-module en werkt dus niet vanaf `file://`, open de map via een webserver). Het lettertype Manrope laad je zelf; zonder valt de stack terug op het systeemlettertype.
+In een Vite-app: `import 'finsera-ui/tokens.css'; import 'finsera-ui/components.css';` (na `npm i ../finsera-ui` of via een git-dependency). Iconen: Lucide. Toasts: laad `vanilla-sonner/style.css` en daarna `toast.css`; `toast.js` vraagt een importmap of bundler voor `vanilla-sonner@0.7.0`. Tabellen: `tabel.js` vraagt een importmap of bundler voor `@tanstack/table-core@8.21.3`. Grafieken: ECharts via `charts.js` (zie `index.html` voor een werkend voorbeeld; `charts.js` is een ES-module en werkt dus niet vanaf `file://`, open de map via een webserver). Het lettertype Manrope laad je zelf; zonder valt de stack terug op het systeemlettertype.
 
 ```jsx
 <section className="fs-kaart">

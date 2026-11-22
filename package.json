@@ -3,12 +3,26 @@
   "version": "0.1.0",
   "private": true,
   "description": "Gedeelde stijl en onderdelen voor Finsera-dashboards",
-  "files": ["tokens.css", "components.css", "charts.js", "tabel.js", "tailwind-theme.css", "DESIGN.md", "AGENTS.md", "LIBRARIES.md", "index.html"],
+  "files": [
+    "tokens.css",
+    "components.css",
+    "charts.js",
+    "tabel.js",
+    "tailwind-theme.css",
+    "DESIGN.md",
+    "AGENTS.md",
+    "LIBRARIES.md",
+    "index.html",
+    "toast.js",
+    "toast.css"
+  ],
   "exports": {
     "./tokens.css": "./tokens.css",
     "./components.css": "./components.css",
     "./charts.js": "./charts.js",
     "./tabel.js": "./tabel.js",
-    "./tailwind-theme.css": "./tailwind-theme.css"
+    "./tailwind-theme.css": "./tailwind-theme.css",
+    "./toast.js": "./toast.js",
+    "./toast.css": "./toast.css"
   }
 }

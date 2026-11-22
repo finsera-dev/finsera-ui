@@ -11,6 +11,7 @@ Bron voor een deel van de kandidaten: [awesome-ui-components](https://github.com
 | Iconen | **Lucide** (uit de lijst) | Eén consistente lijnstijl, ISC-licentie, werkt als losse SVG, UMD, React of Preact. ui-prototype gebruikt het al. Alleen Lucide gebruiken: geen mix met andere sets. |
 | Grafieken | **Apache ECharts** | Staaf, lijn, gestapeld, heatmap, treemap en grote datasets in één library; geen React nodig; SVG-renderer voor scherp afdrukken. Gekoppeld aan de tokens via `charts.js`, dus licht en donker kloppen vanzelf. |
 | Datatabellen | **TanStack Table** (headless) | Logica voor sorteren en filteren; wij leveren `.fs-tabel`. `tabel.js` is de kale-HTML-variant; in React of Preact gebruik je dezelfde kolomdefinities met het adapterpakket van TanStack. **Gepind op 8.21.3**: `latest` op npm is inmiddels 9.x met een andere API; stap pas over na een bewuste upgrade. Zeer grote tabellen: plus TanStack Virtual. |
+| Toasts | **vanilla-sonner** (port van Sonner) | Tijdelijke bevestigingen, stapelen, swipe, toetsenbord en `aria-live`. Werkt in kale HTML, Preact en React omdat het gewone DOM is; uiterlijk komt uit `toast.css` en onze tokens, gedrag uit `toast.js`. **Gepind op 0.7.0.** Let op: dit is een niet-officiële port van één beheerder; het officiële Sonner is React-only. Loopt de port vast, dan is `toast.js` de enige plek om te vervangen. |
 | Tailwind-projecten | **`tailwind-theme.css`** (eigen brug) | Laat `bg-vlak`, `text-tekst-zacht` enzovoort naar onze tokens wijzen, zodat een Tailwind-dashboard dezelfde kleuren heeft. |
 
 ## Overwegen (kies bij de eerste echte behoefte)
@@ -20,7 +21,6 @@ Bron voor een deel van de kandidaten: [awesome-ui-components](https://github.com
 | Select, combobox, datumkiezer, tooltip, popover | **Ark UI** of **Radix** (uit de lijst; headless, toegankelijk) | Alleen voor wat native HTML niet kan. Preact: via `preact/compat`. Kale HTML: **Zag.js** (de kern onder Ark). Gebruik eerst native `<dialog>`, `popover` en `<select>`. |
 | Positionering van menu's en tooltips | **Floating UI** | Als je zelf een popover bouwt zonder Ark of Radix. |
 | Kleine trendlijntjes in tabellen | **uPlot** of de `.fs-grafiek`-SVG-klassen | ECharts is te zwaar voor tientallen sparklines. |
-| Toasts | **Sonner** (React) of een eigen `.fs-melding` met `role="status"` | Alleen in React; elders is de eigen melding genoeg. |
 | Componentdocumentatie en visuele tests | **Storybook** (uit de lijst) | Zodra er echte React/Preact-componenten zijn. Tot dan is `index.html` genoeg. |
 | Datums en getallen | **`Intl`** (ingebouwd) en **date-fns** | `Intl` voor nl-NL-bedragen en -datums; date-fns alleen voor rekenen met datums. Geen moment.js. |
 

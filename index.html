@@ -7,6 +7,8 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400..800&display=swap">
 <link rel="stylesheet" href="tokens.css">
 <link rel="stylesheet" href="components.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vanilla-sonner@0.7.0/dist/vanilla-sonner.min.css">
+<link rel="stylesheet" href="toast.css">
 <style>
   /* Alleen voor deze documentatiepagina */
   .doc-sectie { scroll-margin-top: 20px; }
@@ -19,7 +21,7 @@
   .doc-kleur code { background: none; padding: 0; color: var(--fs-tekst-zacht); font-weight: 500; }
   .doc-thema { margin-top: auto; padding: var(--fs-r3); }
 </style>
-<script type="importmap">{"imports":{"@tanstack/table-core":"https://cdn.jsdelivr.net/npm/@tanstack/table-core@8.21.3/+esm"}}</script>
+<script type="importmap">{"imports":{"@tanstack/table-core":"https://cdn.jsdelivr.net/npm/@tanstack/table-core@8.21.3/+esm","vanilla-sonner":"https://cdn.jsdelivr.net/npm/vanilla-sonner@0.7.0/dist/vanilla-sonner.es.min.mjs"}}</script>
 <script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/lucide@1.77.0/dist/umd/lucide.min.js"></script>
 </head>
@@ -166,6 +168,15 @@
           <span class="fs-badge">Concept</span><span class="fs-badge fs-badge--accent">Actief</span><span class="fs-badge fs-badge--succes">Akkoord</span>
           <span class="fs-badge fs-badge--info">In controle</span><span class="fs-badge fs-badge--waarschuwing">Wacht op klant</span><span class="fs-badge fs-badge--fout">Achterstallig</span>
         </div>
+        <div class="fs-label">Toasts (tijdelijke bevestiging)</div>
+        <div class="fs-rij" id="toast-demo">
+          <button class="fs-knop" data-toast="succes">Succes</button>
+          <button class="fs-knop" data-toast="info">Info</button>
+          <button class="fs-knop" data-toast="waarschuwing">Waarschuwing</button>
+          <button class="fs-knop" data-toast="fout">Fout</button>
+          <button class="fs-knop" data-toast="ongedaan">Met ongedaan maken</button>
+          <button class="fs-knop" data-toast="belofte">Bezig → klaar</button>
+        </div>
         <div class="fs-melding"><div><b>Nieuwe versie beschikbaar</b>Het contract is bijgewerkt naar 1.17.0.</div></div>
         <div class="fs-melding fs-melding--succes"><div><b>Opgeslagen</b>De wijziging staat in het dossier.</div></div>
         <div class="fs-melding fs-melding--fout" role="alert"><div><b>Importeren mislukt</b>Het bestand is geen geldig auditfile.</div></div>
@@ -236,6 +247,19 @@ import('./tabel.js').then(({ maakTabel }) => {
     onWijziging: ({ aantal, totaal }) => { telling.innerHTML = `<span>${aantal} van ${totaal} dossiers</span><span>Bron: Exact Online</span><span>Peildatum: 20 november 2026</span>`; },
   });
   document.getElementById('zoek').addEventListener('input', (e) => t.zoek(e.target.value));
+});
+
+/* Toasts: vanilla-sonner via toast.js */
+import('./toast.js').then(({ melding }) => {
+  const acties = {
+    succes: () => melding.succes('Dossier opgeslagen'),
+    info: () => melding.info('Synchronisatie gestart', 'Dit duurt ongeveer een minuut.'),
+    waarschuwing: () => melding.waarschuwing('Koppeling is 2 dagen oud', 'Vernieuw de koppeling om bij te werken.'),
+    fout: () => melding.fout('Importeren mislukt', 'Het bestand is geen geldig auditfile.'),
+    ongedaan: () => melding.ongedaan('Dossier gearchiveerd', () => melding.succes('Dossier hersteld')),
+    belofte: () => melding.belofte(new Promise((ok) => setTimeout(ok, 1800)), { bezig: 'Opslaan…', klaar: 'Opgeslagen', fout: 'Opslaan mislukt' }),
+  };
+  document.getElementById('toast-demo').addEventListener('click', (e) => { const k = e.target.closest('[data-toast]'); if (k) acties[k.dataset.toast](); });
 });
 lucide.createIcons();
 /* Grafieken: ECharts via charts.js, kleuren komen uit de tokens */
