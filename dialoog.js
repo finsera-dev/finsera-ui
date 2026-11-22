@@ -49,7 +49,7 @@ export function controleerStijl(el, klasse = 'fs-dialoog') {
     `finsera-ui: "${klasse}" is niet opgemaakt (de browser gebruikt zijn standaardstijl). ` +
     'Controleer 1) dat `finsera-ui/tokens.css` en daarna `finsera-ui/components.css` in de pagina geladen zijn, ' +
     '2) dat `finsera-ui` actueel is (`npm update finsera-ui`; zoek in `node_modules/finsera-ui/components.css` naar `' + klasse + '`), ' +
-    '3) dat de dev-server en de cache ververst zijn (bijvoorbeeld `rm -rf .next` en hard herladen). Zie AGENTS.md, "Ziet het er raar uit?".'
+    '3) dat de dev-server en de cache ververst zijn (bijvoorbeeld `rm -rf .next` en hard herladen; in Safari: Ontwikkel › Caches legen, ⌥⌘E, en dan ⌘R, want een dev-server kan daar oude CSS onder dezelfde bestandsnaam blijven tonen). Zie AGENTS.md, "Ziet het er raar uit?".'
   );
 }
 
