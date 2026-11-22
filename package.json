@@ -18,7 +18,8 @@
     "stylelint-config.mjs",
     "dialoog.js",
     "tabs.js",
-    "paneel.js"
+    "paneel.js",
+    "adres.js"
   ],
   "exports": {
     "./tokens.css": "./tokens.css",
@@ -31,7 +32,8 @@
     "./stylelint-config": "./stylelint-config.mjs",
     "./dialoog.js": "./dialoog.js",
     "./tabs.js": "./tabs.js",
-    "./paneel.js": "./paneel.js"
+    "./paneel.js": "./paneel.js",
+    "./adres.js": "./adres.js"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.14.0",
@@ -42,6 +44,7 @@
   "scripts": {
     "lint:css": "stylelint \"*.css\"",
     "test:a11y": "playwright test",
-    "check": "npm run lint:css && npm run test:a11y"
+    "check": "npm run lint:css && npm run test:adres && npm run test:a11y",
+    "test:adres": "node --test tests/adres.node.mjs"
   }
 }

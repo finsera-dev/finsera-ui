@@ -13,6 +13,7 @@ Gedeelde stijl, ontwerpfilosofie en onderdelen voor alle Finsera-dashboards. Gew
 | `dialoog.js` | Dialogen op de native `<dialog>`: `open`, `sluit`, `koppel`, `bevestig()` (belofte), tabs en bewaking van niet-opgeslagen wijzigingen, met `fs-dialoog`-opmaak |
 | `paneel.js` | Zijpaneel op de native `<dialog>`: niet-modaal op breed, modaal op smal scherm; `koppelPaneel`, `openPaneel`, `sluitPaneel` |
 | `tabs.js` | Toegankelijke tabs (ARIA, pijltjestoetsen, Home/End); werkt op de pagina, in een kaart en in een dialoog |
+| `adres.js` | Puur hulpbestand voor adressen: `leesAdres` (pad → route of `null`) en `maakAdres` (route → pad, id's gecodeerd), plus het adresschema van het Kantoorportaal. Geen router: die bouwt elke app zelf |
 | `tailwind-theme.css` | Tailwind v4-brug: `bg-vlak`, `text-tekst-zacht` enzovoort wijzen naar de tokens |
 | `AGENTS.md` | Instructies voor LLM's die een dashboard bouwen: regels, onderdelenlijst, controlelijst |
 | `DESIGN.md` | Principes en regels: lees dit eerst |
@@ -75,10 +76,11 @@ Zorg dat `AGENTS.md` meekomt in de dependency door het in `files` van `package.j
 
 ```bash
 npm install
-npm run check        # Stylelint en axe-toegankelijkheidstest (Playwright)
+npm run check        # Stylelint, adres.js-tests (node --test) en axe-toegankelijkheidstest (Playwright)
 ```
 
 - `npm run lint:css`: Stylelint met `stylelint-config.mjs`. Faalt op hex-waarden, kleurnamen en kleurfuncties buiten `tokens.css`, en op kleur- of lettertype-eigenschappen zonder `var(--fs-…)`.
+- `npm run test:adres`: `node --test` voor `adres.js` (alle adressen heen en terug, onbekende paden, id's met rare tekens); geen dependency en geen browser nodig.
 - `npm run test:a11y`: opent `index.html` in licht en donker, op desktop en mobiel, met toasts zichtbaar, en draait axe (WCAG 2.1 A en AA). Vereist internet voor de CDN-bestanden en een Chromium-browser (`npx playwright install chromium`).
 - GitHub Actions (`.github/workflows/check.yml`) draait dit bij elke push naar `main` en bij elke pull request.
 

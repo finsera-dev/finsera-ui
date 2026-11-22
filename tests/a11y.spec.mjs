@@ -414,3 +414,25 @@ test('tabel: focus blijft op de sorteerknop na sorteren met het toetsenbord', as
   await expect(page.locator('#dossiers th[aria-sort="descending"]')).toBeVisible();
   await expect(knop).toBeFocused();
 });
+
+/* ---------- Navigatie is een link ---------- */
+// Niet getest, want dat vraagt een router en die bouwt elke app zelf: de focus naar de h1 na een routewissel,
+// het role="status"-bericht, document.title en Ctrl/Cmd/middelklik. Dat staat in de doorloop van de app
+// (voor het Portaal: `doorloop/kantoor.spec.ts`, blok 12.4 in finsera-kern).
+test('navigatie: items zijn links met href, precies één is de huidige pagina', async ({ page }) => {
+  await page.goto('/index.html');
+  await page.waitForSelector('.fs-nav svg');
+  const nav = page.locator('.fs-nav');
+  expect(await nav.count()).toBeGreaterThan(1);
+  expect(await nav.evaluateAll((els) => els.map((e) => e.tagName))).toEqual(Array(await nav.count()).fill('A'));
+  expect(await nav.evaluateAll((els) => els.every((e) => e.getAttribute('href')))).toBe(true);
+  await expect(page.getByRole('link', { name: 'Kleur' })).toBeVisible(); // een schermlezer noemt het een link
+  await expect(page.locator('.fs-nav[aria-current="page"]')).toHaveCount(1);
+  await expect(page.locator('.fs-nav.is-actief')).toHaveCount(0); // de actieve staat zit in aria-current, niet alleen in een klasse
+
+  // Een klik verplaatst aria-current; toetsenbord (Enter) werkt als bij elke link.
+  await page.getByRole('link', { name: 'Status' }).focus();
+  await page.keyboard.press('Enter');
+  await expect(page.getByRole('link', { name: 'Status' })).toHaveAttribute('aria-current', 'page');
+  await expect(page.locator('.fs-nav[aria-current="page"]')).toHaveCount(1);
+});

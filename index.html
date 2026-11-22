@@ -33,7 +33,7 @@
       <span class="fs-merk__teken">F</span>
       <div><b>Finsera UI</b><small>Dashboard-library</small></div>
     </div>
-    <a class="fs-nav is-actief" href="#voorbeeld"><i data-lucide="layout-dashboard"></i>Voorbeeld</a>
+    <a class="fs-nav" href="#voorbeeld" aria-current="page"><i data-lucide="layout-dashboard"></i>Voorbeeld</a>
     <a class="fs-nav" href="#kleur"><i data-lucide="palette"></i>Kleur</a>
     <a class="fs-nav" href="#knoppen"><i data-lucide="square-pen"></i>Knoppen en velden</a>
     <a class="fs-nav" href="#status"><i data-lucide="triangle-alert"></i>Status</a>
@@ -46,6 +46,9 @@
   </aside>
 
   <main class="fs-inhoud">
+    <!-- Navigatie is een link (<a href>), een knop is alleen voor een actie. Na een routewissel in een app: focus naar de h1
+         en een kort bericht in dit role="status"-element (zie AGENTS.md, "Adressen en navigatie"). -->
+    <p class="fs-alleen-lezer" role="status" id="route-status"></p>
 
     <!-- ===== Voorbeelddashboard ===== -->
     <section id="voorbeeld" class="doc-sectie fs-stapel">
@@ -320,6 +323,10 @@ document.querySelectorAll('[data-thema]').forEach(b => b.addEventListener('click
   const t = b.dataset.thema;
   t === 'auto' ? root.removeAttribute('data-theme') : root.setAttribute('data-theme', t);
   document.querySelectorAll('[data-thema]').forEach(x => x.setAttribute('aria-pressed', x === b));
+}));
+/* Navigatie (alleen documentatie): aria-current volgt de gekozen link. Een app zet dit zelf vanuit haar route. */
+document.querySelectorAll('.fs-nav[href^="#"]').forEach(a => a.addEventListener('click', () => {
+  document.querySelectorAll('.fs-nav').forEach(x => x === a ? x.setAttribute('aria-current', 'page') : x.removeAttribute('aria-current'));
 }));
 /* Segment: één actief */
 document.querySelectorAll('[data-groep]').forEach(g => g.addEventListener('click', e => {

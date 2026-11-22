@@ -84,6 +84,43 @@ Elk niveau heeft één duidelijke knop naar het volgende. Dubbel werk voorkom je
 - **Dialoog:** altijd modaal, altijd een titel, Esc en Annuleren sluiten. De primaire knop staat rechts en heet naar de handeling. Bij een formulier met wijzigingen vraagt sluiten eerst om bevestiging.
 - **Bevestiging van iets onomkeerbaars:** de veilige keuze krijgt de focus, de knop heet naar de handeling ("Dossier verwijderen"), nooit "OK".
 
+## Adressen en navigatie
+
+Een dashboard is pas een werkplek als je er een collega naartoe kunt sturen. Elk scherm heeft daarom een eigen adres dat je kunt kopiëren, in een nieuw tabblad kunt openen en kunt delen, en terug, vooruit en vernieuwen blijven op dezelfde plek. Alle apps (Kantoorportaal, Boekassistent en wat er nog komt) volgen dezelfde afspraken, zodat een link uit de ene app in de andere werkt. Hoe de app het bouwt (een eigen router, een hook, een component) is aan de app; de afspraken zijn hier, het kleine pure hulpbestand is `adres.js`.
+
+### Waarom deze afspraken
+
+- **Alleen id's in het adres.** Een adres komt in de geschiedenis van de browser, in gedeelde links, in logs en in mails. Een naam, KvK-nummer of e-mailadres daarin is een gegeven van de klant dat ergens belandt waar het niet hoort. Een id (een uuid zonder betekenis) is dat niet.
+- **Een dossier heeft één vast adres: `/dossiers/<dossier-id>`**, met het id uit de kern (`kern.dossiers.id`). Daardoor mag elke andere app er zonder overleg naartoe linken. Wat erachter zit (het scherm met de gegevens) mag veranderen; het adres niet.
+- **Een eenvoudig pad per onderdeel.** Het schema van het Kantoorportaal is een voorbeeld voor andere apps; voor de dossier-adressen is het bindend:
+
+  | Adres | Scherm |
+  |---|---|
+  | `/dossiers` | lijst met dossiers |
+  | `/dossiers/nieuw` | nieuw dossier |
+  | `/dossiers/<dossier-id>` | één dossier |
+  | `/dossiers/<dossier-id>/toegang` | wie toegang heeft tot dit dossier |
+  | `/auditfile` | auditfile importeren |
+  | `/medewerkers` | medewerkers |
+  | `/toewijzingen` | toewijzingen |
+  | `/gebruik` | AI-gebruik en budget |
+
+  Het pad is kort, Nederlands, kleine letters, enkelvoud of meervoud zoals je het hardop zegt. Een letterlijk stuk (`nieuw`) wint altijd van een id.
+- **"Bestaat niet" en "geen toegang" geven dezelfde melding:** "Dit dossier bestaat niet of je hebt er geen toegang toe." Verschilt de melding, dan kan iedereen met een lijst id's uitproberen welke dossiers bestaan, ook die van andere kantoren. Het scherm verklapt niets.
+- **Navigatie is een echte link (`<a href>`), geen knop.** Een link kun je met Ctrl, Cmd of middelklik in een nieuw tabblad openen, kopiëren, bladwijzeren en een schermlezer noemt hem een link. Een gewone klik mag client-side navigeren, zodat het snel blijft. Een knop is voor een actie (iets opslaan, iets verwijderen), een link voor "ga naar".
+- **Elk scherm heeft een eigen `document.title`** ("Dossiers · Finsera Kantoorportaal"): het is wat je in tabbladen, in de geschiedenis en bij een schermlezer ziet. Het onderdeel staat voorop, want tabbladen kappen aan het eind af.
+- **Na een routewissel gaat de focus naar de hoofdkop (h1)**, met een kort bericht in een `role="status"`-element. Een muisgebruiker ziet de pagina veranderen; een toetsenbord- of schermlezergebruiker merkt zonder dit niets, want de pagina laadt niet opnieuw. Een router die de focus laat staan is een toegankelijkheidsstap terug, en axe vangt dat niet.
+- **Terug, vooruit en vernieuwen blijven op dezelfde plek.** Het adres is de enige bron voor "waar ben ik"; de pagina leest het adres en bewaart dat niet apart. Het `#`-deel is gereserveerd voor de uitnodigings- en herstellinks van de kern en wordt niet door de router gelezen of herschreven.
+- **Een gedeelde link zonder sessie** toont het inlogscherm, en na inloggen en de tweede stap komt de gebruiker vanzelf op het gevraagde adres uit. Het adres wordt daarvoor niet bewaard of herschreven: het blijft tijdens het inloggen gewoon in de adresbalk staan.
+
+### Wat niet mag
+
+- Geen naam, KvK-nummer, e-mailadres of ander gegeven van de klant in een adres of in `document.title` van een lijstscherm.
+- Geen `<button>` of `<div onclick>` voor navigatie, en geen link zonder `href`.
+- Geen eigen adres voor een dossier naast `/dossiers/<dossier-id>`.
+- Geen verschillende melding voor "bestaat niet" en "geen toegang".
+- Geen routewissel zonder verplaatste focus en `role="status"`-bericht.
+
 ## Toegankelijkheid
 
 - Tekstcontrast minimaal 4,5:1 (`--fs-tekst-zacht` op `--fs-vlak` haalt dat; laat dat zo).
