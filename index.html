@@ -28,22 +28,31 @@
 <body class="fs-basis">
 <div class="fs-schil">
 
-  <aside class="fs-zijbalk">
+  <nav class="fs-zijbalk" aria-label="Hoofdnavigatie">
     <div class="fs-merk">
       <span class="fs-merk__teken">F</span>
       <div><b>Finsera UI</b><small>Dashboard-library</small></div>
     </div>
     <a class="fs-nav" href="#voorbeeld" aria-current="page"><i data-lucide="layout-dashboard"></i>Voorbeeld</a>
     <a class="fs-nav" href="#kleur"><i data-lucide="palette"></i>Kleur</a>
-    <a class="fs-nav" href="#knoppen"><i data-lucide="square-pen"></i>Knoppen en velden</a>
-    <a class="fs-nav" href="#status"><i data-lucide="triangle-alert"></i>Status</a>
-    <a class="fs-nav" href="#data"><i data-lucide="chart-column"></i>Tabellen en grafieken</a>
+    <div class="fs-nav-groep">
+      <button type="button" class="fs-nav fs-nav--groep" id="nav-onderdelen-kop" aria-expanded="false" aria-controls="nav-onderdelen">
+        <i data-lucide="layers"></i><span class="fs-nav__tekst">Onderdelen</span><i data-lucide="chevron-down" class="fs-nav__pijl"></i>
+      </button>
+      <div class="fs-nav__sub" id="nav-onderdelen" role="group" aria-labelledby="nav-onderdelen-kop">
+        <div class="fs-nav__sublijst">
+          <a class="fs-nav fs-nav--sub" href="#knoppen">Knoppen en velden</a>
+          <a class="fs-nav fs-nav--sub" href="#status">Status</a>
+          <a class="fs-nav fs-nav--sub" href="#data">Tabellen en grafieken</a>
+        </div>
+      </div>
+    </div>
     <div class="doc-thema fs-segment" role="group" aria-label="Thema">
       <button data-thema="auto" aria-pressed="true">Auto</button>
       <button data-thema="light" aria-pressed="false">Licht</button>
       <button data-thema="dark" aria-pressed="false">Donker</button>
     </div>
-  </aside>
+  </nav>
 
   <main class="fs-inhoud">
     <!-- Navigatie is een link (<a href>), een knop is alleen voor een actie. Na een routewissel in een app: focus naar de h1
@@ -487,6 +496,14 @@ Promise.all([import('./paneel.js'), import('./toast.js')]).then(([{ koppelPaneel
     sluitPaneel(p);
     document.dispatchEvent(new CustomEvent('open-dossier-instellingen', { detail: d }));
   });
+});
+
+/* Uitklapbare navigatiegroepen (nav.js). Een app markeert aria-current vanuit haar route; hier volgt het de #-ankers. */
+import('./nav.js').then(({ maakNavigatie }) => {
+  const vanAdres = location.hash && document.querySelector(`.fs-nav[href="${location.hash}"]`);
+  if (vanAdres) { document.querySelectorAll('.fs-nav').forEach((x) => x.removeAttribute('aria-current')); vanAdres.setAttribute('aria-current', 'page'); }
+  const nav = maakNavigatie(document.querySelector('.fs-zijbalk'));
+  document.querySelectorAll('.fs-nav[href^="#"]').forEach((a) => a.addEventListener('click', () => nav.synchroniseer()));
 });
 lucide.createIcons();
 /* Grafieken: ECharts via charts.js, kleuren komen uit de tokens */

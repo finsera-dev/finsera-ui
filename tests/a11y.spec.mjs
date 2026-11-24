@@ -441,15 +441,20 @@ test('tabel: focus blijft op de sorteerknop na sorteren met het toetsenbord', as
 test('navigatie: items zijn links met href, precies één is de huidige pagina', async ({ page }) => {
   await page.goto('/index.html');
   await page.waitForSelector('.fs-nav svg');
-  const nav = page.locator('.fs-nav');
+  // Items zijn links. De kop van een uitklapbare groep is de uitzondering: in- of uitklappen is een actie, dus een knop.
+  const nav = page.locator('.fs-nav:not(.fs-nav--groep)');
   expect(await nav.count()).toBeGreaterThan(1);
+  const koppen = page.locator('.fs-nav--groep');
+  expect(await koppen.count()).toBeGreaterThan(0);
+  expect(await koppen.evaluateAll((els) => els.every((e) => e.tagName === 'BUTTON' && e.hasAttribute('aria-expanded') && e.hasAttribute('aria-controls')))).toBe(true);
   expect(await nav.evaluateAll((els) => els.map((e) => e.tagName))).toEqual(Array(await nav.count()).fill('A'));
   expect(await nav.evaluateAll((els) => els.every((e) => e.getAttribute('href')))).toBe(true);
   await expect(page.getByRole('link', { name: 'Kleur' })).toBeVisible(); // een schermlezer noemt het een link
   await expect(page.locator('.fs-nav[aria-current="page"]')).toHaveCount(1);
   await expect(page.locator('.fs-nav.is-actief')).toHaveCount(0); // de actieve staat zit in aria-current, niet alleen in een klasse
 
-  // Een klik verplaatst aria-current; toetsenbord (Enter) werkt als bij elke link.
+  // Een klik verplaatst aria-current; toetsenbord (Enter) werkt als bij elke link. Status staat in een groep: eerst uitklappen.
+  await page.getByRole('button', { name: 'Onderdelen' }).click();
   await page.getByRole('link', { name: 'Status' }).focus();
   await page.keyboard.press('Enter');
   await expect(page.getByRole('link', { name: 'Status' })).toHaveAttribute('aria-current', 'page');
@@ -520,4 +525,133 @@ test('paneel: de titel krijgt focus zonder zichtbare rand; knoppen houden hun fo
   await page.keyboard.press('Shift+Tab');
   await page.keyboard.press('Tab');
   expect(await page.getByRole('button', { name: 'Paneel sluiten' }).evaluate((el) => getComputedStyle(el).outlineStyle)).not.toBe('none');
+});
+
+/* ---------- Uitklapbare navigatiegroepen ---------- */
+const navKop = (page) => page.getByRole('button', { name: 'Onderdelen' });
+const navSub = (page, naam) => page.locator('#nav-onderdelen').getByRole('link', { name: naam });
+
+test('navigatie: groep klapt uit en in met muis en toetsenbord; dichte subitems zijn onbereikbaar', async ({ page }) => {
+  await page.goto('/index.html');
+  await page.waitForSelector('#dossiers table');
+  await expect(navKop(page)).toHaveAttribute('aria-expanded', 'false');
+  await expect(navSub(page, 'Status')).toBeHidden();
+
+  await navKop(page).click();
+  await expect(navKop(page)).toHaveAttribute('aria-expanded', 'true');
+  await expect(navSub(page, 'Status')).toBeVisible();
+  await expect(navSub(page, 'Knoppen en velden')).toBeVisible();
+
+  await navKop(page).click();
+  await expect(navKop(page)).toHaveAttribute('aria-expanded', 'false');
+  await expect(navSub(page, 'Status')).toBeHidden();
+
+  // Toetsenbord: Enter klapt uit, Tab gaat het eerste subitem in, Spatie klapt in.
+  await navKop(page).focus();
+  await page.keyboard.press('Enter');
+  await expect(navKop(page)).toHaveAttribute('aria-expanded', 'true');
+  await page.keyboard.press('Tab');
+  await expect(navSub(page, 'Knoppen en velden')).toBeFocused();
+  await page.keyboard.press('Shift+Tab');
+  await expect(navKop(page)).toBeFocused();
+  await page.keyboard.press('Space');
+  await expect(navKop(page)).toHaveAttribute('aria-expanded', 'false');
+
+  // Dicht: Tab slaat de subitems over, ze zijn niet in de tabvolgorde.
+  await page.keyboard.press('Tab');
+  expect(await page.evaluate(() => Boolean(document.activeElement.closest('#nav-onderdelen')))).toBe(false);
+});
+
+test('navigatie: de groep met de huidige pagina is open bij het laden en de kop licht op, ook als hij dicht is', async ({ page }) => {
+  await page.goto('/index.html#status');
+  await page.waitForSelector('#dossiers table');
+  await expect(navKop(page)).toHaveAttribute('aria-expanded', 'true');
+  await expect(navSub(page, 'Status')).toHaveAttribute('aria-current', 'page');
+
+  const kleur = (loc) => loc.evaluate((el) => getComputedStyle(el).color);
+  const gewoon = await kleur(page.locator('.fs-nav', { hasText: 'Kleur' }).first());
+  expect(await kleur(navKop(page)), 'kop licht op als de huidige pagina erin staat').not.toBe(gewoon);
+  await navKop(page).click(); // dichtklappen
+  await expect(navSub(page, 'Status')).toBeHidden();
+  expect(await kleur(navKop(page)), 'ook dichtgeklapt').not.toBe(gewoon);
+
+  // Kiest de gebruiker een ander item, dan verhuist aria-current en blijft de groep zoals hij stond.
+  await navKop(page).click();
+  await navSub(page, 'Knoppen en velden').click();
+  await expect(navSub(page, 'Knoppen en velden')).toHaveAttribute('aria-current', 'page');
+  await expect(navSub(page, 'Status')).not.toHaveAttribute('aria-current', 'page');
+});
+
+test('nav.js: synchroniseer opent de groep met de huidige pagina; enkel houdt er één open', async ({ page }) => {
+  await page.goto('/index.html');
+  await page.waitForSelector('#dossiers table');
+  const uitkomst = await page.evaluate(async () => {
+    const { maakNavigatie } = await import('/nav.js');
+    const groep = (id) => `<div class="fs-nav-groep"><button type="button" class="fs-nav fs-nav--groep" aria-expanded="false" aria-controls="${id}">${id}</button>
+      <div class="fs-nav__sub" id="${id}"><div class="fs-nav__sublijst"><a class="fs-nav fs-nav--sub" href="#${id}-1">één</a></div></div></div>`;
+    const wortel = document.createElement('nav');
+    wortel.innerHTML = groep('a') + groep('b');
+    document.body.appendChild(wortel);
+    const nav = maakNavigatie(wortel);
+    const staat = () => [...wortel.querySelectorAll('.fs-nav--groep')].map((k) => k.getAttribute('aria-expanded'));
+    const begin = staat();
+    wortel.querySelector('#b a').setAttribute('aria-current', 'page'); // de app wisselt van route
+    nav.synchroniseer();
+    const naRoute = staat();
+    wortel.querySelector('[aria-controls=a]').click(); // gebruiker opent ook a: b blijft open
+    const naKlik = staat();
+    nav.dispose();
+
+    const enkelWortel = document.createElement('nav');
+    enkelWortel.innerHTML = groep('c') + groep('d');
+    document.body.appendChild(enkelWortel);
+    maakNavigatie(enkelWortel, { enkel: true });
+    enkelWortel.querySelector('[aria-controls=c]').click();
+    enkelWortel.querySelector('[aria-controls=d]').click();
+    const enkel = [...enkelWortel.querySelectorAll('.fs-nav--groep')].map((k) => k.getAttribute('aria-expanded'));
+    return { begin, naRoute, naKlik, enkel, subOpen: wortel.querySelector('#b').classList.contains('is-open') };
+  });
+  expect(uitkomst.begin).toEqual(['false', 'false']);
+  expect(uitkomst.naRoute).toEqual(['false', 'true']);
+  expect(uitkomst.subOpen).toBe(true);
+  expect(uitkomst.naKlik).toEqual(['true', 'true']);
+  expect(uitkomst.enkel).toEqual(['false', 'true']);
+});
+
+for (const kleur of thema) {
+  test(`navigatie: axe met groep dicht en open (desktop en mobiel), ${kleur}`, async ({ browser }) => {
+    for (const viewport of [schermen.desktop, schermen.mobiel]) {
+      const context = await browser.newContext({ viewport, colorScheme: kleur, reducedMotion: 'reduce' });
+      const page = await context.newPage();
+      await page.goto('/index.html#status');
+      await page.waitForSelector('#dossiers table');
+      for (const open of [true, false]) {
+        const nu = (await navKop(page).getAttribute('aria-expanded')) === 'true';
+        if (nu !== open) await navKop(page).click();
+        await expect(navKop(page)).toHaveAttribute('aria-expanded', String(open));
+        const { violations } = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).analyze();
+        const samenvatting = violations.map((v) => `${v.id}: ${v.help}\n   ${v.nodes.slice(0, 3).map((n) => n.target.join(' ')).join('\n   ')}`).join('\n');
+        expect(violations, `Fouten (${viewport.width}px, groep ${open ? 'open' : 'dicht'}):\n${samenvatting}`).toEqual([]);
+      }
+      await context.close();
+    }
+  });
+}
+
+test('navigatie op mobiel: subitems verschijnen als extra tabs in dezelfde balk, zonder horizontale paginascroll', async ({ browser }) => {
+  const context = await browser.newContext({ viewport: schermen.mobiel });
+  const page = await context.newPage();
+  await page.goto('/index.html');
+  await page.waitForSelector('#dossiers table');
+  await expect(navSub(page, 'Status')).toBeHidden();
+  await navKop(page).click();
+  await expect(navSub(page, 'Status')).toBeVisible();
+  const kop = await navKop(page).boundingBox();
+  const sub = await navSub(page, 'Status').boundingBox();
+  expect(Math.abs(kop.y - sub.y), 'subitem staat in dezelfde rij als de kop').toBeLessThan(12);
+  expect(sub.x, 'subitem staat achter de kop').toBeGreaterThan(kop.x);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
+  await navKop(page).click();
+  await expect(navSub(page, 'Status')).toBeHidden();
+  await context.close();
 });

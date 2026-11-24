@@ -129,10 +129,30 @@ Een dashboard is pas een werkplek als je er een collega naartoe kunt sturen. Elk
 ### Wat niet mag
 
 - Geen naam, KvK-nummer, e-mailadres of ander gegeven van de klant in een adres of in `document.title` van een lijstscherm.
-- Geen `<button>` of `<div onclick>` voor navigatie, en geen link zonder `href`.
+- Geen `<button>` of `<div onclick>` om naar een pagina te gaan, en geen link zonder `href`. (De kop van een uitklapbare groep is wel een knop: die gaat nergens heen, hij klapt alleen in of uit.)
 - Geen eigen adres voor een dossier naast `/dossiers/<dossier-id>`.
 - Geen verschillende melding voor "bestaat niet" en "geen toegang".
 - Geen routewissel zonder verplaatste focus en `role="status"`-bericht.
+
+### Uitklapbare groepen in de navigatie
+
+Een groep verbergt onderdelen die bij elkaar horen achter één regel in de zijbalk. Gebruik dat spaarzaam: elk niveau is een klik extra.
+
+- **Wanneer.** Bij meer dan ongeveer zeven onderdelen in de zijbalk, of als een onderdeel echt uit delen bestaat (Dossiers: Overzicht, Nieuw dossier, Auditfile). Zijn het er zes of minder zonder duidelijke families, houd de zijbalk dan plat. Een groep met één item is een gewoon item.
+- **Maximaal twee niveaus:** groep, dan item. Is er een derde nodig, dan klopt de indeling niet: gebruik tabs op de pagina of een eigen scherm.
+- **De kop is een knop, de subitems zijn links.** In- of uitklappen is een actie die nergens heen gaat, dus een knop is hier juist goed. Elk subitem is een echte `<a href>` met een eigen adres. Wil de groep zelf een pagina, maak dan het eerste subitem "Overzicht".
+- **Staat de huidige pagina in een groep, dan is die groep open bij het laden** en licht de kop op, ook als de gebruiker hem dichtklapt, zodat je altijd ziet in welk deel je zit. `aria-current="page"` staat op het subitem, nooit op de kop.
+- **Meerdere groepen mogen tegelijk open zijn.** Wordt de zijbalk daardoor te lang, dan zijn er te veel groepen; als noodgreep kan `maakNavigatie(wortel, { enkel: true })` er één tegelijk open laten.
+- **Onthoud niet tussen bezoeken welke groepen open stonden,** behalve de groep met de huidige pagina. Een zijbalk die elke keer anders is, verrast.
+- **Dicht is echt weg.** Subitems van een dichte groep zijn niet met Tab of een schermlezer te bereiken (`inert`).
+- **Op een telefoon is de zijbalk een rij tabs.** De kop blijft een tab en de subitems komen als extra tabs erachter zodra de groep openstaat. Houd labels daarom kort.
+- **Toetsen:** Enter en Spatie op de kop klappen in of uit; Tab gaat daarna het eerste subitem in.
+
+**Wat niet mag bij groepen**
+- Geen groep in een groep.
+- Geen kop die tegelijk naar een pagina gaat én uitklapt. Wil je dat, maak er een "Overzicht"-subitem van.
+- Geen groep voor één item.
+- Geen uitklappen bij hover: dat werkt niet met een toetsenbord of op een telefoon.
 
 ## Toegankelijkheid
 

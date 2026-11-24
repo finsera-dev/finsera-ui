@@ -19,7 +19,8 @@
     "dialoog.js",
     "tabs.js",
     "paneel.js",
-    "adres.js"
+    "adres.js",
+    "nav.js"
   ],
   "exports": {
     "./tokens.css": "./tokens.css",
@@ -33,7 +34,8 @@
     "./dialoog.js": "./dialoog.js",
     "./tabs.js": "./tabs.js",
     "./paneel.js": "./paneel.js",
-    "./adres.js": "./adres.js"
+    "./adres.js": "./adres.js",
+    "./nav.js": "./nav.js"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.14.0",
